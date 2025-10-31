@@ -12,16 +12,22 @@ import java.util.Optional;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 @Service
 public class MunicipalityService {
+
+    private static final Logger logger = LoggerFactory.getLogger(MunicipalityService.class);
 
     @Autowired
     private MunicipalityRepository municipalityRepository;
 
     public Boolean fetchFromAPI() {
-
+        logger.info("Fetching municipalities from API...");
         // check if repo already has data
         if (municipalityRepository.count() > 0) {
+            logger.info("Municipality repository already has data. Skipping fetch.");
             return true;
         }
 
@@ -30,8 +36,8 @@ public class MunicipalityService {
         try {
             ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
             if (response.getStatusCode().is2xxSuccessful()) {
-                // print the response body
                 String responseBody = response.getBody();
+                logger.debug("Received response from API: {}", responseBody);
                 ObjectMapper objectMapper = new ObjectMapper();
                 List<String> names = objectMapper.readValue(responseBody, new TypeReference<List<String>>(){});
 
@@ -41,24 +47,27 @@ public class MunicipalityService {
                     .collect(Collectors.toList());
 
                 municipalityRepository.saveAll(municipalities);
+                logger.info("Saved {} municipalities to repository.", municipalities.size());
 
                 return true;
             } else {
+                logger.warn("Failed to fetch municipalities. Status code: {}", response.getStatusCode());
                 return false;
             }
         } catch (Exception e) {
+            logger.error("Exception occurred while fetching municipalities from API", e);
             return false;
         }
     }
 
     public List<Municipality> getAllMunicipalities() {
+        logger.info("Fetching all municipalities from repository.");
         return municipalityRepository.findAll();
     }
 
     public Optional<Municipality> getMunicipalityByName(String name) {
+        logger.info("Fetching municipality by name: {}", name);
         return municipalityRepository.findByName(name);
     }
-
-
 
 }

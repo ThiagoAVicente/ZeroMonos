@@ -1,5 +1,6 @@
 package org.hw1;
 
+import org.hw1.data.User;
 import org.hw1.boundary.ServiceRequestRestController;
 import org.hw1.data.Municipality;
 import org.hw1.data.ServiceRequest;
@@ -27,6 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.hw1.service.UserService;
 
 @WebMvcTest(ServiceRequestRestController.class)
 public class ServiceRequestRestControllerTest {
@@ -40,26 +42,42 @@ public class ServiceRequestRestControllerTest {
     @MockBean
     private MunicipalityService municipalityService;
 
+    @MockBean
+    private UserService userService;
+
     @Test
     public void createServiceRequest_Success() throws Exception {
+        User u = new User();
+        Municipality m = new Municipality();
+
+        when(userService.getUserByName(any())).thenReturn(Optional.of(u));
+        when(municipalityService.getMunicipalityByName(any()))
+                .thenReturn(Optional.of(m));
+
         ServiceRequest req = new ServiceRequest();
         when(serviceRequestService.createServiceRequest(any(), any(), any(), any(), anyString()))
                 .thenReturn(req);
 
         mockMvc.perform(post("/requests")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"user\":{},\"municipality\":{},\"requestedDate\":\"2024-06-01\",\"timeSlot\":\"10:00\",\"description\":\"Colchão velho\"}"))
+                .content("{\"user\":\"validUser\",\"municipality\":\"Lisbon\",\"requestedDate\":\"2024-06-01\",\"timeSlot\":\"10:00\",\"description\":\"Colchão velho\"}"))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void createServiceRequest_Conflict() throws Exception {
+        User u = new User();
+        Municipality m = new Municipality();
+
+        when(userService.getUserByName(any())).thenReturn(Optional.of(u));
+        when(municipalityService.getMunicipalityByName(any()))
+                .thenReturn(Optional.of(m));
         when(serviceRequestService.createServiceRequest(any(), any(), any(), any(), anyString()))
                 .thenReturn(null);
 
         mockMvc.perform(post("/requests")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"user\":{},\"municipality\":{},\"requestedDate\":\"2024-06-01\",\"timeSlot\":\"10:00\",\"description\":\"Colchão velho\"}"))
+                .content("{\"user\":\"validUser\",\"municipality\":\"Lisbon\",\"requestedDate\":\"2024-06-01\",\"timeSlot\":\"10:00\",\"description\":\"Colchão velho\"}"))
                 .andExpect(status().isConflict());
     }
 

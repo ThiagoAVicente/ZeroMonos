@@ -1,6 +1,7 @@
 package org.hw1.data;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,6 +27,7 @@ public class ServiceStatusHistory {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "service_request_id", nullable = false)
+    @OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
     private ServiceRequest serviceRequest;
 
     @Enumerated(EnumType.STRING)

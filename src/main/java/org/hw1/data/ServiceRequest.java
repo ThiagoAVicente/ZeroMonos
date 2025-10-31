@@ -2,6 +2,7 @@ package org.hw1.data;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.OnDelete;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,6 +25,7 @@ public class ServiceRequest {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)

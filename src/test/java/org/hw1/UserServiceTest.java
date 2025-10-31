@@ -29,19 +29,22 @@ public class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
+    private User user1;
+
     @BeforeEach
     public void setUp() {
         // create used and mock repository responses
-        User user1 = new User();
+        user1 = new User();
         user1.setName("user1");
-        user1.setPassword(userService.hashPassword("password"));
-        when(userRepository.findByName("user1")).thenReturn(Optional.of(user1) );
+        user1.setPassword(UserService.hashPassword("password"));
+        when(userRepository.findByName("user1")).thenReturn(Optional.of(user1));
+        when(userRepository.findByName("nonexistent")).thenReturn(Optional.empty());
     }
 
     @Test
     public void hashIsDeterministic(){
-        String s1 = userService.hashPassword("mysecretpassword");
-        String s2 = userService.hashPassword("mysecretpassword");
+        String s1 = UserService.hashPassword("mysecretpassword");
+        String s2 = UserService.hashPassword("mysecretpassword");
         assertThat(s1, is(s2));
     }
 
@@ -56,5 +59,18 @@ public class UserServiceTest {
         assertThat(auth, is(false));
     }
 
+    @Test
+    public void getUserByNameReturnsUserWhenExists() {
+        User found = userService.getUserByName("user1").orElse(null);
+        assertThat(found, is(notNullValue()));
+        assertThat(found.getName(), is("user1"));
+        assertThat(found.getPassword(), is(UserService.hashPassword("password")));
+    }
+
+    @Test
+    public void getUserByNameReturnsNullWhenNotExists() {
+        User found = userService.getUserByName("nonexistent").orElse(null);
+        assertThat(found, is(nullValue()));
+    }
 
 }
