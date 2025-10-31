@@ -14,8 +14,12 @@ import org.slf4j.LoggerFactory;
 public class UserRestController {
     private static final Logger logger = LoggerFactory.getLogger(UserRestController.class);
 
-    @Autowired
     private UserService userService;
+
+    @Autowired
+    public UserRestController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping("/authenticate")
     public ResponseEntity<Boolean> authenticate(@RequestBody AuthRequest request) {

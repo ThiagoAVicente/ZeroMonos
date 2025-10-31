@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.hw1.boundary.UserRestController;
 
 @WebMvcTest(UserRestController.class)
-public class UserRestControllerTest {
+class UserRestControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -22,7 +22,7 @@ public class UserRestControllerTest {
     private UserService userService;
 
     @Test
-    public void authenticate_Success() throws Exception {
+    void authenticate_Success() throws Exception {
         when(userService.authenticate("validUser", "validPassword")).thenReturn(true);
 
         mockMvc.perform(post("/users/authenticate")
@@ -33,7 +33,7 @@ public class UserRestControllerTest {
     }
 
     @Test
-    public void authenticate_Failure() throws Exception {
+    void authenticate_Failure() throws Exception {
         when(userService.authenticate("invalidUser", "wrongPassword")).thenReturn(false);
 
         mockMvc.perform(post("/users/authenticate")

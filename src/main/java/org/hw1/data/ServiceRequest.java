@@ -43,6 +43,6 @@ public class ServiceRequest {
 
     @Column
     @UpdateTimestamp
-    public LocalDateTime last_update;
+    public LocalDateTime lastUpdate;
 
 }

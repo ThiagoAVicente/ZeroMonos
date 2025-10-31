@@ -11,7 +11,6 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +19,12 @@ public class MunicipalityService {
 
     private static final Logger logger = LoggerFactory.getLogger(MunicipalityService.class);
 
-    @Autowired
     private MunicipalityRepository municipalityRepository;
+
+    @Autowired
+    public MunicipalityService(MunicipalityRepository municipalityRepository) {
+        this.municipalityRepository = municipalityRepository;
+    }
 
     public Boolean fetchFromAPI() {
         logger.info("Fetching municipalities from API...");
@@ -40,11 +43,10 @@ public class MunicipalityService {
                 logger.debug("Received response from API: {}", responseBody);
                 ObjectMapper objectMapper = new ObjectMapper();
                 List<String> names = objectMapper.readValue(responseBody, new TypeReference<List<String>>(){});
-
                 // Create municipality objects
                 List<Municipality> municipalities = names.stream()
                     .map(Municipality::new)
-                    .collect(Collectors.toList());
+                    .toList();
 
                 municipalityRepository.saveAll(municipalities);
                 logger.info("Saved {} municipalities to repository.", municipalities.size());

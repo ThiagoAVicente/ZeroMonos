@@ -2,10 +2,7 @@ package org.hw1;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.hw1.data.ServiceRequest;
 import org.hw1.data.ServiceRequestRepository;
-import org.hw1.data.Status;
-import org.hw1.service.MunicipalityService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +18,7 @@ import org.hw1.data.UserRepository;
 import org.hw1.service.UserService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ServiceRequestIT {
+class ServiceRequestIT {
     private static final Logger logger = LoggerFactory.getLogger(ServiceRequestIT.class);
 
     @LocalServerPort
@@ -32,7 +29,7 @@ public class ServiceRequestIT {
     @Autowired
     private ServiceRequestRepository serviceRequestRepository;
     @BeforeEach
-    public void setup() {
+    void setup() {
         RestAssured.baseURI = "http://localhost";
         User user = new User();
         user.setName("Test User");
@@ -48,7 +45,7 @@ public class ServiceRequestIT {
     }
 
     @Test
-    public void testCreateServiceRequest_Success_PortugueseMunicipio() {
+    void testCreateServiceRequest_Success_PortugueseMunicipio() {
         String requestBody = "{"
                 + "\"user\": \"Test User\","
                 + "\"municipality\": \"Lisboa\","
@@ -71,7 +68,7 @@ public class ServiceRequestIT {
     }
 
     @Test
-    public void testCreateServiceRequest_InvalidMunicipio() {
+    void testCreateServiceRequest_InvalidMunicipio() {
         String requestBody = "{"
                 + "\"user\": \"Test User\","
                 + "\"municipality\": \"MunicípioInexistente\","
@@ -91,7 +88,7 @@ public class ServiceRequestIT {
     }
 
     @Test
-    public void testCreateServiceRequest_InvalidUser() {
+    void testCreateServiceRequest_InvalidUser() {
         String requestBody = "{"
                 + "\"user\": \"UtilizadorInexistente\","
                 + "\"municipality\": \"Lisboa\","
@@ -111,7 +108,7 @@ public class ServiceRequestIT {
     }
 
     @Test
-    public void testCreateServiceRequest_InvalidDateFormat() {
+    void testCreateServiceRequest_InvalidDateFormat() {
         String requestBody = "{"
                 + "\"user\": \"Test User\","
                 + "\"municipality\": \"Lisboa\","
@@ -131,7 +128,7 @@ public class ServiceRequestIT {
     }
 
     @Test
-    public void testCreateServiceRequest_InvalidTimeFormat() {
+    void testCreateServiceRequest_InvalidTimeFormat() {
         String requestBody = "{"
                 + "\"user\": \"Test User\","
                 + "\"municipality\": \"Lisboa\","
@@ -151,7 +148,7 @@ public class ServiceRequestIT {
     }
 
     @Test
-    public void testCreateServiceRequest_Conflict() {
+    void testCreateServiceRequest_Conflict() {
         String requestBody = "{"
                 + "\"user\": \"Test User\","
                 + "\"municipality\": \"Porto\","
@@ -180,7 +177,7 @@ public class ServiceRequestIT {
     }
 
     @Test
-    public void testGetRequestsByMunicipality_NotFound() {
+    void testGetRequestsByMunicipality_NotFound() {
         given()
             .port(port)
             .queryParam("municipality", "UnknownCity")
@@ -191,7 +188,7 @@ public class ServiceRequestIT {
     }
 
     @Test
-    public void testCancelServiceRequest_NotFound() {
+    void testCancelServiceRequest_NotFound() {
         given()
             .port(port)
         .when()
@@ -201,7 +198,7 @@ public class ServiceRequestIT {
     }
 
     @Test
-    public void testUpdateServiceRequestStatus_NotFound() {
+    void testUpdateServiceRequestStatus_NotFound() {
         given()
             .port(port)
             .contentType(ContentType.JSON)
@@ -213,7 +210,7 @@ public class ServiceRequestIT {
     }
 
     @Test
-    public void testGetMunicipalities() {
+    void testGetMunicipalities() {
         given()
             .port(port)
         .when()

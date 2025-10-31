@@ -17,7 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 @DataJpaTest
-public class ServiceRequestRepositoryTest {
+class ServiceRequestRepositoryTest {
 
     @Autowired
     private TestEntityManager entityManager;
@@ -26,7 +26,7 @@ public class ServiceRequestRepositoryTest {
     private ServiceRequestRepository serviceRequestRepository;
 
     @Test
-    public void testFindByToken() {
+    void testFindByToken() {
         Municipality municipality = new Municipality("Lisbon");
         entityManager.persist(municipality);
 
@@ -57,7 +57,7 @@ public class ServiceRequestRepositoryTest {
     }
 
     @Test
-    public void testFindByMunicipality() {
+    void testFindByMunicipality() {
         Municipality municipality1 = new Municipality("Lisbon");
         entityManager.persist(municipality1);
 

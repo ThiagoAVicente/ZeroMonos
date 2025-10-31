@@ -30,7 +30,7 @@ import org.hw1.service.ServiceRequestService;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class ServiceRequestServiceTest {
+class ServiceRequestServiceTest {
 
     @Mock
     private ServiceRequestRepository serviceRequestRepository;

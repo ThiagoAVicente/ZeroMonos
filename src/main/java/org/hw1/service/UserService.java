@@ -3,6 +3,8 @@ package org.hw1.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.hw1.data.UserRepository;
+
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Optional;
 
@@ -15,8 +17,12 @@ public class UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public Boolean authenticate (String name, String password){
         logger.info("Authenticating user with name: {}", name);
@@ -42,10 +48,10 @@ public class UserService {
 
     }
 
-    static public String hashPassword(String password) {
+    public static String hashPassword(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hash = md.digest(password.getBytes("UTF-8"));
+            byte[] hash = md.digest(password.getBytes(StandardCharsets.UTF_8));
             StringBuilder hexString = new StringBuilder();
             for (byte b : hash) {
                 String hex = Integer.toHexString(0xff & b);
@@ -55,8 +61,7 @@ public class UserService {
             return hexString.toString();
         } catch (Exception e) {
             // Logging the exception
-            LoggerFactory.getLogger(UserService.class).error("Error hashing password", e);
-            throw new RuntimeException(e);
+            throw new IllegalStateException("SHA-256 algorithm not available", e);
         }
     }
 

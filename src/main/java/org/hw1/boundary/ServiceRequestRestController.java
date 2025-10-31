@@ -23,14 +23,16 @@ public class ServiceRequestRestController {
 
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ServiceRequestRestController.class);
 
-    @Autowired
     private ServiceRequestService serviceRequestService;
-
-    @Autowired
     private UserService userService;
+    private MunicipalityService municipalityService;
 
     @Autowired
-    private MunicipalityService municipalityService;
+    public ServiceRequestRestController(ServiceRequestService serviceRequestService, UserService userService, MunicipalityService municipalityService) {
+        this.serviceRequestService = serviceRequestService;
+        this.userService = userService;
+        this.municipalityService = municipalityService;
+    }
 
     @PostMapping
     public ResponseEntity<?> createRequest(@RequestBody CreateServiceRequestDTO request) {

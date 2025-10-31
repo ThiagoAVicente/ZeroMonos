@@ -18,7 +18,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 @DataJpaTest
-public class ServiceStatusHistoryRepositoryTest {
+class ServiceStatusHistoryRepositoryTest {
 
     @Autowired
     private TestEntityManager entityManager;
@@ -27,7 +27,7 @@ public class ServiceStatusHistoryRepositoryTest {
     private ServiceStatusHistoryRepository serviceStatusHistoryRepository;
 
     @Test
-    public void testFindByServiceRequestOrderByChangedAtDesc() {
+    void testFindByServiceRequestOrderByChangedAtDesc() {
         Municipality municipality = new Municipality("Lisbon");
         entityManager.persist(municipality);
 

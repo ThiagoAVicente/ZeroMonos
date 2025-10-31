@@ -24,7 +24,7 @@ import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class MunicipalityServiceTest {
+class MunicipalityServiceTest {
 
 
     @Mock
@@ -34,7 +34,7 @@ public class MunicipalityServiceTest {
     private MunicipalityService municipalityService;
 
     @Test
-    public void testFetchMunicipalityFromApi() {
+    void testFetchMunicipalityFromApi() {
         when(municipalityRepository.count()).thenReturn(0L);
         Boolean result = municipalityService.fetchFromAPI();
         assertThat(result, is(true));
@@ -42,7 +42,7 @@ public class MunicipalityServiceTest {
     }
 
     @Test
-    public void testFetchMunicipalityFromApiWhenDataExists() {
+    void testFetchMunicipalityFromApiWhenDataExists() {
         when(municipalityRepository.count()).thenReturn(10L);
         Boolean result = municipalityService.fetchFromAPI();
         assertThat(result, is(true));
@@ -50,7 +50,7 @@ public class MunicipalityServiceTest {
     }
 
     @Test
-    public void getAllMunicipalitiesTest() {
+    void getAllMunicipalitiesTest() {
         when(municipalityRepository.findAll()).thenReturn(
                 List.of(new Municipality( "Lisbon"), new Municipality( "Porto"))
         );
@@ -61,7 +61,7 @@ public class MunicipalityServiceTest {
     }
 
     @Test
-    public void getMunicipalityByNameExistsTest() {
+    void getMunicipalityByNameExistsTest() {
         Municipality lisbon = new Municipality("Lisbon");
         when(municipalityRepository.findByName("Lisbon")).thenReturn(Optional.of(lisbon));
         Optional<Municipality> result = municipalityService.getMunicipalityByName("Lisbon");
@@ -70,7 +70,7 @@ public class MunicipalityServiceTest {
     }
 
     @Test
-    public void getMunicipalityByNameNotExistsTest() {
+    void getMunicipalityByNameNotExistsTest() {
         when(municipalityRepository.findByName("Nonexistent")).thenReturn(Optional.empty());
         Optional<Municipality> result = municipalityService.getMunicipalityByName("Nonexistent");
         assertThat(result.isPresent(), is(false));

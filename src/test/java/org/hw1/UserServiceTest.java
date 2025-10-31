@@ -20,7 +20,7 @@ import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class UserServiceTest {
+class UserServiceTest {
 
 
     @Mock
@@ -32,7 +32,7 @@ public class UserServiceTest {
     private User user1;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         // create used and mock repository responses
         user1 = new User();
         user1.setName("user1");
@@ -42,25 +42,25 @@ public class UserServiceTest {
     }
 
     @Test
-    public void hashIsDeterministic(){
+    void hashIsDeterministic(){
         String s1 = UserService.hashPassword("mysecretpassword");
         String s2 = UserService.hashPassword("mysecretpassword");
         assertThat(s1, is(s2));
     }
 
     @Test
-    public void userCorrectPassword() {
+    void userCorrectPassword() {
         Boolean auth = userService.authenticate("user1", "password");
         assertThat(auth, is(true));
     }
     @Test
-    public void userWrongPassword() {
+    void userWrongPassword() {
         Boolean auth = userService.authenticate("user1", "wrongpassword");
         assertThat(auth, is(false));
     }
 
     @Test
-    public void getUserByNameReturnsUserWhenExists() {
+    void getUserByNameReturnsUserWhenExists() {
         User found = userService.getUserByName("user1").orElse(null);
         assertThat(found, is(notNullValue()));
         assertThat(found.getName(), is("user1"));
@@ -68,7 +68,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void getUserByNameReturnsNullWhenNotExists() {
+    void getUserByNameReturnsNullWhenNotExists() {
         User found = userService.getUserByName("nonexistent").orElse(null);
         assertThat(found, is(nullValue()));
     }

@@ -24,19 +24,23 @@ public class ServiceRequestService {
 
     private static final Logger logger = LoggerFactory.getLogger(ServiceRequestService.class);
 
-    @Autowired
     private ServiceRequestRepository serviceRequestRepository;
-
-    @Autowired
     private ServiceStatusHistoryRepository serviceStatusHistoryRepository;
+    @Autowired
+    public ServiceRequestService(ServiceRequestRepository serviceRequestRepository,
+                                 ServiceStatusHistoryRepository serviceStatusHistoryRepository) {
+        this.serviceRequestRepository = serviceRequestRepository;
+        this.serviceStatusHistoryRepository = serviceStatusHistoryRepository;
+    }
 
-    private static final int MAX_REQUESTS_PER_USER = 5;
+    static final String TOKENNOTFOUND = "Service request not found for token: {}";
+
 
     public ServiceRequest createServiceRequest(User user, Municipality municipality, LocalDate requestedDate, LocalTime timeSlot, String description) {
-        logger.info("Creating service request for user: {}, municipality: {}, date: {}, timeSlot: {}", 
-            user != null ? user.getId() : null, 
-            municipality != null ? municipality.getName() : null, 
-            requestedDate, 
+        logger.info("Creating service request for user: {}, municipality: {}, date: {}, timeSlot: {}",
+            user != null ? user.getId() : null,
+            municipality != null ? municipality.getName() : null,
+            requestedDate,
             timeSlot);
         ServiceRequest request = new ServiceRequest();
         request.setUser(user);
@@ -49,7 +53,7 @@ public class ServiceRequestService {
         request.setToken(token);
 
         if (!isAvailable(municipality, requestedDate, timeSlot)) {
-            logger.warn("Requested slot not available for municipality: {}, date: {}, timeSlot: {}", 
+            logger.warn("Requested slot not available for municipality: {}, date: {}, timeSlot: {}",
                 municipality != null ? municipality.getName() : null, requestedDate, timeSlot);
             return null;
         }
@@ -69,7 +73,7 @@ public class ServiceRequestService {
         // check if request exists
         ServiceRequest request = serviceRequestRepository.findByToken(token)
             .orElseThrow(() -> {
-                logger.error("Service request not found for token: {}", token);
+                logger.error(TOKENNOTFOUND, token);
                 return new Exception("Service request not found");
             });
 
@@ -82,7 +86,7 @@ public class ServiceRequestService {
         logger.info("Fetching service status history for token: {}", token);
         ServiceRequest request = serviceRequestRepository.findByToken(token)
             .orElseThrow(() -> {
-                logger.error("Service request not found for token: {}", token);
+                logger.error(TOKENNOTFOUND, token);
                 return new Exception("Service request not found");
             });
 
@@ -93,7 +97,7 @@ public class ServiceRequestService {
         logger.info("Updating status for service request token: {} to status: {}", token, newStatus);
         ServiceRequest request = serviceRequestRepository.findByToken(token)
             .orElseThrow(() -> {
-                logger.error("Service request not found for token: {}", token);
+                logger.error(TOKENNOTFOUND, token);
                 return new Exception("Service request not found");
             });
 
@@ -113,7 +117,7 @@ public class ServiceRequestService {
     }
 
     public void addStatusHistoryEntry(ServiceRequest request, Status status) {
-        logger.info("Adding status history entry for request token: {}, status: {}", 
+        logger.info("Adding status history entry for request token: {}, status: {}",
             request != null ? request.getToken() : null, status);
         ServiceStatusHistory history = new ServiceStatusHistory();
         history.setServiceRequest(request);
@@ -123,9 +127,9 @@ public class ServiceRequestService {
 
     public boolean isAvailable(Municipality municipality,
         LocalDate date,
-        LocalTime time_slot){
-        logger.debug("Checking availability for municipality: {}, date: {}, time_slot: {}", 
-            municipality != null ? municipality.getName() : null, date, time_slot);
+        LocalTime timeSlot){
+        logger.debug("Checking availability for municipality: {}, date: {}, time_slot: {}",
+            municipality != null ? municipality.getName() : null, date, timeSlot);
         // check if is a sunday
         if (date.getDayOfWeek().getValue() == 7) {
             logger.info("Requested date is a Sunday, not available.");
@@ -135,22 +139,22 @@ public class ServiceRequestService {
         // find all requests for the municipality at the given date
         List<ServiceRequest> requests = serviceRequestRepository.findByMunicipalityAndRequestedDate(municipality, date);
         // check if there is any conflict. each time slot has an expected duration of 1 hour
-        LocalTime before_max = time_slot.minusHours(1);
-        LocalTime after_max = time_slot.plusHours(1);
+        LocalTime beforeMax = timeSlot.minusHours(1);
+        LocalTime afterMax = timeSlot.plusHours(1);
         for (ServiceRequest request : requests) {
             LocalTime existingTimeSlot = request.getTimeSlot();
-            LocalTime existing_before_max = existingTimeSlot.minusHours(1);
-            LocalTime existing_after_max = existingTimeSlot.plusHours(1);
-            boolean isTimeSlotConflict = (time_slot.isAfter(existing_before_max) && time_slot.isBefore(existing_after_max));
-            boolean isExistingSlotConflict = (existingTimeSlot.isAfter(before_max) && existingTimeSlot.isBefore(after_max));
+            LocalTime existingBeforeMax = existingTimeSlot.minusHours(1);
+            LocalTime existingAfterMax = existingTimeSlot.plusHours(1);
+            boolean isTimeSlotConflict = (timeSlot.isAfter(existingBeforeMax) && timeSlot.isBefore(existingAfterMax));
+            boolean isExistingSlotConflict = (existingTimeSlot.isAfter(beforeMax) && existingTimeSlot.isBefore(afterMax));
             if (isTimeSlotConflict || isExistingSlotConflict){
-                logger.info("Time slot conflict detected for municipality: {}, date: {}, time_slot: {}", 
-                    municipality != null ? municipality.getName() : null, date, time_slot);
+                logger.info("Time slot conflict detected for municipality: {}, date: {}, time_slot: {}",
+                    municipality != null ? municipality.getName() : null, date, timeSlot);
                 return false;
             }
         }
-        logger.debug("Slot available for municipality: {}, date: {}, time_slot: {}", 
-            municipality != null ? municipality.getName() : null, date, time_slot);
+        logger.debug("Slot available for municipality: {}, date: {}, time_slot: {}",
+            municipality != null ? municipality.getName() : null, date, timeSlot);
         return true;
     }
 

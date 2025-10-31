@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.hw1.service.UserService;
 
 @WebMvcTest(ServiceRequestRestController.class)
-public class ServiceRequestRestControllerTest {
+class ServiceRequestRestControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -46,7 +46,7 @@ public class ServiceRequestRestControllerTest {
     private UserService userService;
 
     @Test
-    public void createServiceRequest_Success() throws Exception {
+    void createServiceRequest_Success() throws Exception {
         User u = new User();
         Municipality m = new Municipality();
 
@@ -65,7 +65,7 @@ public class ServiceRequestRestControllerTest {
     }
 
     @Test
-    public void createServiceRequest_Conflict() throws Exception {
+    void createServiceRequest_Conflict() throws Exception {
         User u = new User();
         Municipality m = new Municipality();
 
@@ -82,7 +82,7 @@ public class ServiceRequestRestControllerTest {
     }
 
     @Test
-    public void getServiceRequestByToken_Found() throws Exception {
+    void getServiceRequestByToken_Found() throws Exception {
         ServiceRequest req = new ServiceRequest();
         when(serviceRequestService.getServiceRequestByToken("abc123")).thenReturn(Optional.of(req));
 
@@ -91,7 +91,7 @@ public class ServiceRequestRestControllerTest {
     }
 
     @Test
-    public void getServiceRequestByToken_NotFound() throws Exception {
+    void getServiceRequestByToken_NotFound() throws Exception {
         when(serviceRequestService.getServiceRequestByToken("notfound")).thenReturn(Optional.empty());
 
         mockMvc.perform(get("/requests/notfound"))
@@ -99,14 +99,14 @@ public class ServiceRequestRestControllerTest {
     }
 
     @Test
-    public void cancelServiceRequest_Success() throws Exception {
+    void cancelServiceRequest_Success() throws Exception {
         // Não lança exceção
         mockMvc.perform(delete("/requests/abc123"))
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void cancelServiceRequest_NotFound() throws Exception {
+    void cancelServiceRequest_NotFound() throws Exception {
         // Simula exceção
         Mockito.doThrow(new Exception("Service request not found"))
                 .when(serviceRequestService).cancelServiceRequest("notfound");
@@ -116,7 +116,7 @@ public class ServiceRequestRestControllerTest {
     }
 
     @Test
-    public void getRequestsByMunicipality_ReturnsList() throws Exception {
+    void getRequestsByMunicipality_ReturnsList() throws Exception {
         Municipality mun = new Municipality();
         when(municipalityService.getMunicipalityByName("Lisbon")).thenReturn(Optional.of(mun));
 
@@ -125,14 +125,14 @@ public class ServiceRequestRestControllerTest {
     }
 
     @Test
-    public void getRequestsByMunicipality_NotFound() throws Exception {
+    void getRequestsByMunicipality_NotFound() throws Exception {
         when(municipalityService.getMunicipalityByName("Unknown")).thenReturn(Optional.empty());
         mockMvc.perform(get("/requests?municipality=Unknown"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    public void updateServiceRequestStatus_Success() throws Exception {
+    void updateServiceRequestStatus_Success() throws Exception {
         mockMvc.perform(put("/requests/abc123/status")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("\"ASSIGNED\""))
@@ -140,7 +140,7 @@ public class ServiceRequestRestControllerTest {
     }
 
     @Test
-    public void updateServiceRequestStatus_NotFound() throws Exception {
+    void updateServiceRequestStatus_NotFound() throws Exception {
         Mockito.doThrow(new Exception("Service request not found"))
                 .when(serviceRequestService).updateServiceRequestStatus(eq("notfound"), any(Status.class));
 
@@ -151,7 +151,7 @@ public class ServiceRequestRestControllerTest {
     }
 
     @Test
-    public void getServiceStatusHistory_Success() throws Exception {
+    void getServiceStatusHistory_Success() throws Exception {
         when(serviceRequestService.getServiceStatusHistory("abc123")).thenReturn(List.of(new ServiceStatusHistory()));
 
         mockMvc.perform(get("/requests/abc123/history"))
@@ -159,7 +159,7 @@ public class ServiceRequestRestControllerTest {
     }
 
     @Test
-    public void getServiceStatusHistory_NotFound() throws Exception {
+    void getServiceStatusHistory_NotFound() throws Exception {
         Mockito.doThrow(new Exception("Service request not found"))
                         .when(serviceRequestService).getServiceStatusHistory("notfound");
         mockMvc.perform(get("/requests/notfound/history"))
@@ -167,7 +167,7 @@ public class ServiceRequestRestControllerTest {
     }
 
     @Test
-    public void getMunicipalities_ReturnsList() throws Exception {
+    void getMunicipalities_ReturnsList() throws Exception {
         when(municipalityService.getAllMunicipalities()).thenReturn(List.of(new Municipality()));
 
         mockMvc.perform(get("/requests/municipalities"))
