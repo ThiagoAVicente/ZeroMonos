@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.hw1.data.MunicipalityRepository;
 import org.hw1.data.Municipality;
 import java.util.List;
+import java.util.Optional;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.stream.Collectors;
@@ -51,6 +53,10 @@ public class MunicipalityService {
 
     public List<Municipality> getAllMunicipalities() {
         return municipalityRepository.findAll();
+    }
+
+    public Optional<Municipality> getMunicipalityByName(String name) {
+        return municipalityRepository.findByName(name);
     }
 
 

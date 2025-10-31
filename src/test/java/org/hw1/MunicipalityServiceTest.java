@@ -20,6 +20,7 @@ import static org.hamcrest.Matchers.*;
 
 import org.hw1.data.Municipality;
 import java.util.List;
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -57,6 +58,22 @@ public class MunicipalityServiceTest {
         assertThat(municipalities, hasSize(2));
         assertThat(municipalities.get(0).getName(), is("Lisbon"));
         assertThat(municipalities.get(1).getName(), is("Porto"));
+    }
+
+    @Test
+    public void getMunicipalityByNameExistsTest() {
+        Municipality lisbon = new Municipality("Lisbon");
+        when(municipalityRepository.findByName("Lisbon")).thenReturn(Optional.of(lisbon));
+        Optional<Municipality> result = municipalityService.getMunicipalityByName("Lisbon");
+        assertThat(result.isPresent(), is(true));
+        assertThat(result.get().getName(), is("Lisbon"));
+    }
+
+    @Test
+    public void getMunicipalityByNameNotExistsTest() {
+        when(municipalityRepository.findByName("Nonexistent")).thenReturn(Optional.empty());
+        Optional<Municipality> result = municipalityService.getMunicipalityByName("Nonexistent");
+        assertThat(result.isPresent(), is(false));
     }
 
 }
