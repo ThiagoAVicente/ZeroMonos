@@ -1,0 +1,6 @@
+org/hw1/ServiceRequestServiceTest.class
+org/hw1/MunicipalityServiceTest.class
+org/hw1/UserRestControllerTest.class
+org/hw1/ServiceRequestRepositoryTest.class
+org/hw1/ServiceStatusHistoryRepositoryTest.class
+org/hw1/UserServiceTest.class
