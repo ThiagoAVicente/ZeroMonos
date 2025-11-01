@@ -51,7 +51,9 @@ jobs:
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-        -Dsonar.projectKey=ThiagoAVicente_ZeroMonos
+          -Dsonar.projectKey=ThiagoAVicente_ZeroMonos \
+          -Dsonar.organization=thiagoavicente \
+          -Dsonar.token=${{ secrets.SONAR_TOKEN }}
     - name: Stop app
       if: always()
       run: kill $(cat app.pid) || true

@@ -19,7 +19,6 @@ import org.hw1.service.UserService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ServiceRequestIT {
-    private static final Logger logger = LoggerFactory.getLogger(ServiceRequestIT.class);
 
     @LocalServerPort
     private int port;

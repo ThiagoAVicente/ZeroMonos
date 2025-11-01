@@ -18,7 +18,6 @@ public class CitizenPortalSteps {
     private BrowserContext context;
     private Page page;
     private String baseUrl;
-    private String generatedToken;
 
     @Before("@citizen")
     public void setUp() {
@@ -141,7 +140,6 @@ public class CitizenPortalSteps {
     public void iShouldSeeTheGeneratedToken() {
         String tokenElement = page.locator("#generatedToken").textContent();
         assertThat(tokenElement).isNotNull();
-        this.generatedToken = tokenElement;
     }
 
     @Then("I should see the {string} section")

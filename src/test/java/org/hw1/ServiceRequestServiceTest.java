@@ -191,7 +191,7 @@ class ServiceRequestServiceTest {
     }
 
     @Test
-    void testCancelServiceRequest() throws Exception {
+    void testCancelServiceRequest() {
         ServiceStatusHistory history = new ServiceStatusHistory();
         history.setServiceRequest(request);
         history.setStatus(Status.RECEIVED);
@@ -205,7 +205,7 @@ class ServiceRequestServiceTest {
     }
 
     @Test
-    void testCancelServiceRequest_WithAssignedStatus() throws Exception {
+    void testCancelServiceRequest_WithAssignedStatus() {
         ServiceStatusHistory history = new ServiceStatusHistory();
         history.setServiceRequest(request);
         history.setStatus(Status.ASSIGNED);
