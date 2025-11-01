@@ -85,7 +85,7 @@ public class ServiceRequestService {
         }
 
         Status currentStatus = history.get(0).getStatus();
-        
+
         // only allow cancellation if status is RECEIVED or ASSIGNED
         if (currentStatus != Status.RECEIVED && currentStatus != Status.ASSIGNED) {
             logger.warn("Cannot cancel service request with token: {} - current status is: {}", token, currentStatus);
@@ -126,7 +126,12 @@ public class ServiceRequestService {
     }
 
     public List<ServiceRequest> getServiceRequestsByUser(User user) {
-        logger.info("Fetching service requests for user: {}", user != null ? user.getId() : null);
+        if (user == null) {
+            logger.warn("User is null when fetching service requests by user.");
+            return List.of();
+        }
+
+        logger.info("Fetching service requests for user: {}",user.getId());
         // check if user exists
         return serviceRequestRepository.findByUserId(user.getId());
     }
@@ -145,13 +150,13 @@ public class ServiceRequestService {
         LocalTime timeSlot){
         logger.debug("Checking availability for municipality: {}, date: {}, time_slot: {}",
             municipality != null ? municipality.getName() : null, date, timeSlot);
-        
+
         // check if date is in the past
         if (date.isBefore(LocalDate.now())) {
             logger.info("Requested date {} is in the past, not available.", date);
             return false;
         }
-        
+
         // check if is a sunday
         if (date.getDayOfWeek().getValue() == 7) {
             logger.info("Requested date is a Sunday, not available.");
