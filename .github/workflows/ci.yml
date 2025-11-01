@@ -54,7 +54,7 @@ jobs:
         mvn -B sonar:sonar \
         -Dsonar.projectKey=ThiagoAVicente_ZeroMonos \
         -Dsonar.host.url=https://sonarcloud.io \
-        -Dsonar.organization="Thiago Vicente" \
+        -Dsonar.organization="thiagoavicente" \
         -Dsonar.login=${{ secrets.SONAR_TOKEN }}
     # Stop app
     - name: Stop app
