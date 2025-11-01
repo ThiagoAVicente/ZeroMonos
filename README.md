@@ -62,3 +62,13 @@ docker run --name postgresdb -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=secret 
 ```bash
 mvn clean spring-boot:run -Dspring-boot.run.profiles=postgres
 ```
+
+## Build & Run
+
+Copy `.env.example` to `.env` and update it with your configuration.
+
+Then start the application with:
+
+```bash
+mvn spring-boot:run
+```
