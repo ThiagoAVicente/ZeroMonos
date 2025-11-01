@@ -35,7 +35,7 @@ public class ServiceRequestRestController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createRequest(@RequestBody CreateServiceRequestDTO request) {
+    public ResponseEntity<ServiceRequest> createRequest(@RequestBody CreateServiceRequestDTO request) {
         logger.info("Received createRequest for user: {}, municipality: {}", request.getUser(), request.getMunicipality());
 
         User u = request.getUser() != null
@@ -56,7 +56,7 @@ public class ServiceRequestRestController {
         }
         if (u == null || m == null) {
             logger.warn("Invalid user or municipality. User: {}, Municipality: {}", request.getUser(), request.getMunicipality());
-            return ResponseEntity.badRequest().body("Invalid user or municipality");
+            return ResponseEntity.badRequest().build();
         }
 
         LocalDate requestedDate = null;
@@ -66,7 +66,7 @@ public class ServiceRequestRestController {
             timeSlot = request.getTimeSlot() != null ? LocalTime.parse(request.getTimeSlot()) : null;
         } catch (Exception e) {
             logger.warn("Invalid date or time format. Date: {}, Time: {}", request.getRequestedDate(), request.getTimeSlot());
-            return ResponseEntity.badRequest().body("Invalid date or time format");
+            return ResponseEntity.badRequest().build();
         }
 
         ServiceRequest created = serviceRequestService.createServiceRequest(
@@ -78,14 +78,15 @@ public class ServiceRequestRestController {
         );
         if (created == null) {
             logger.warn("Request conflict or unavailable slot for user: {}, municipality: {}", request.getUser(), request.getMunicipality());
-            return ResponseEntity.status(409).body("Request conflict or unavailable slot");
+            return ResponseEntity.status(409).build();
         }
         logger.info("ServiceRequest created successfully with token: {}", created.getToken());
         return ResponseEntity.ok(created);
     }
 
     @GetMapping("/{token}")
-    public ResponseEntity<?> getRequestByToken(@PathVariable String token) {
+    public ResponseEntity<ServiceRequest> getRequestByToken(@PathVariable String token) {
+        token = token.replaceAll("[\n\r]", "_");
         logger.info("Received getRequestByToken for token: {}", token);
         Optional<ServiceRequest> req = serviceRequestService.getServiceRequestByToken(token);
         if (req.isPresent()) {
@@ -97,9 +98,10 @@ public class ServiceRequestRestController {
     }
 
     @DeleteMapping("/{token}")
-    public ResponseEntity<?> cancelRequest(@PathVariable String token) {
-        logger.info("Received cancelRequest for token: {}", token);
+    public ResponseEntity<Void> cancelRequest(@PathVariable String token) {
         try {
+            token = token.replaceAll("[\n\r]", "_");
+            logger.info("Received cancel Request for token: {}", token);
             serviceRequestService.cancelServiceRequest(token);
             logger.info("ServiceRequest cancelled for token: {}", token);
             return ResponseEntity.ok().build();
@@ -108,14 +110,15 @@ public class ServiceRequestRestController {
             if (e.getMessage().contains("not found")) {
                 return ResponseEntity.notFound().build();
             } else if (e.getMessage().contains("Cannot cancel")) {
-                return ResponseEntity.badRequest().body(e.getMessage());
+                return ResponseEntity.badRequest().build();
             }
-            return ResponseEntity.status(500).body("Internal server error");
+            return ResponseEntity.status(500).build();
         }
     }
 
     @GetMapping
     public ResponseEntity<List<ServiceRequest>> getRequestsByMunicipality(@RequestParam String municipality) {
+        municipality = municipality.replaceAll("[\n\r]", "_");
         logger.info("Received getRequestsByMunicipality for municipality: {}", municipality);
         if (municipality == null) {
             logger.warn("Municipality parameter is null");
@@ -132,7 +135,8 @@ public class ServiceRequestRestController {
     }
 
     @PutMapping("/{token}/status")
-    public ResponseEntity<?> updateRequestStatus(@PathVariable String token, @RequestBody Status status) {
+    public ResponseEntity<Void> updateRequestStatus(@PathVariable String token, @RequestBody Status status) {
+        token = token.replaceAll("[\n\r]", "_");
         logger.info("Received updateRequestStatus for token: {}, status: {}", token, status);
         try {
             serviceRequestService.updateServiceRequestStatus(token, status);
@@ -146,6 +150,7 @@ public class ServiceRequestRestController {
 
     @GetMapping("/{token}/history")
     public ResponseEntity<List<ServiceStatusHistory>> getServiceStatusHistory(@PathVariable String token) {
+        token = token.replaceAll("[\n\r]", "_");
         logger.info("Received getServiceStatusHistory for token: {}", token);
         try {
             List<ServiceStatusHistory> history = serviceRequestService.getServiceStatusHistory(token);
@@ -167,6 +172,7 @@ public class ServiceRequestRestController {
 
     @GetMapping("/user/{username}")
     public ResponseEntity<List<ServiceRequest>> getRequestsByUser(@PathVariable String username) {
+        username = username.replaceAll("[\n\r]", "_");
         logger.info("Received getRequestsByUser for username: {}", username);
         Optional<User> user = userService.getUserByName(username);
         if (user.isEmpty()) {

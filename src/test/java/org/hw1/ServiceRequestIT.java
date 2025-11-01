@@ -45,11 +45,11 @@ class ServiceRequestIT {
     }
 
     @Test
-    void testCreateServiceRequest_Success_PortugueseMunicipio() {
+    void testCreateServiceRequest_Success() {
         String requestBody = "{"
                 + "\"user\": \"Test User\","
                 + "\"municipality\": \"Lisboa\","
-                + "\"requestedDate\": \"2026-11-01\","
+                + "\"requestedDate\": \"2026-11-04\","
                 + "\"timeSlot\": \"10:00\","
                 + "\"description\": \"Mesa velha\""
                 + "}";
