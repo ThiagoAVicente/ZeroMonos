@@ -219,4 +219,58 @@ class ServiceRequestIT {
             .statusCode(200)
             .body("$", not(empty()));
     }
+
+    @Test
+    void testGetRequestsByUser_Success() {
+        // First create a service request
+        String requestBody = "{"
+                + "\"user\": \"Test User\","
+                + "\"municipality\": \"Lisboa\","
+                + "\"requestedDate\": \"2025-11-05\","
+                + "\"timeSlot\": \"14:00\","
+                + "\"description\": \"Test item\""
+                + "}";
+
+        given()
+            .port(port)
+            .contentType(ContentType.JSON)
+            .body(requestBody)
+        .when()
+            .post("/requests")
+        .then()
+            .statusCode(200);
+
+        // Now get requests by user
+        given()
+            .port(port)
+        .when()
+            .get("/requests/user/Test User")
+        .then()
+            .statusCode(200)
+            .body("$", not(empty()))
+            .body("[0].user.name", equalTo("Test User"))
+            .body("[0].municipality.name", equalTo("Lisboa"));
+    }
+
+    @Test
+    void testGetRequestsByUser_NotFound() {
+        given()
+            .port(port)
+        .when()
+            .get("/requests/user/NonExistentUser")
+        .then()
+            .statusCode(404);
+    }
+
+    @Test
+    void testGetRequestsByUser_EmptyList() {
+        // User exists but has no requests
+        given()
+            .port(port)
+        .when()
+            .get("/requests/user/Test User")
+        .then()
+            .statusCode(200)
+            .body("$", empty());
+    }
 }

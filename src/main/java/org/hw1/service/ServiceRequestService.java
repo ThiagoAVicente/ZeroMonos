@@ -136,9 +136,14 @@ public class ServiceRequestService {
             return false;
         }
 
-        // find all requests for the municipality at the given date
+        LocalTime serviceStart = LocalTime.of(9, 0);
+        LocalTime serviceEnd = LocalTime.of(18, 0);
+        if (timeSlot.isBefore(serviceStart) || !timeSlot.isBefore(serviceEnd)) {
+            logger.info("Requested time slot {} is outside service hours (09:00-18:00), not available.", timeSlot);
+            return false;
+        }
+
         List<ServiceRequest> requests = serviceRequestRepository.findByMunicipalityAndRequestedDate(municipality, date);
-        // check if there is any conflict. each time slot has an expected duration of 1 hour
         LocalTime beforeMax = timeSlot.minusHours(1);
         LocalTime afterMax = timeSlot.plusHours(1);
         for (ServiceRequest request : requests) {

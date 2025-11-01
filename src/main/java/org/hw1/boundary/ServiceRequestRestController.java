@@ -159,4 +159,17 @@ public class ServiceRequestRestController {
         logger.info("Found {} municipalities", list.size());
         return ResponseEntity.ok(list);
     }
+
+    @GetMapping("/user/{username}")
+    public ResponseEntity<List<ServiceRequest>> getRequestsByUser(@PathVariable String username) {
+        logger.info("Received getRequestsByUser for username: {}", username);
+        Optional<User> user = userService.getUserByName(username);
+        if (user.isEmpty()) {
+            logger.warn("User not found: {}", username);
+            return ResponseEntity.notFound().build();
+        }
+        List<ServiceRequest> list = serviceRequestService.getServiceRequestsByUser(user.get());
+        logger.info("Found {} requests for user: {}", list.size(), username);
+        return ResponseEntity.ok(list);
+    }
 }

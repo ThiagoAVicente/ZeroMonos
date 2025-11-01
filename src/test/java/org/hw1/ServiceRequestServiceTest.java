@@ -248,4 +248,81 @@ class ServiceRequestServiceTest {
         boolean available = service.isAvailable(municipality, STATIC_DATE, TIME1000);
         assertThat(available, is(true));
     }
+
+    @Test
+    void testIsAvailable_TimeBeforeServiceHours_ReturnsFalse() {
+        LocalTime timeSlot = LocalTime.of(8, 30); // Before 09:00
+        when(serviceRequestRepository.findByMunicipalityAndRequestedDate(municipality, STATIC_DATE))
+            .thenReturn(Arrays.asList());
+
+        boolean result = service.isAvailable(municipality, STATIC_DATE, timeSlot);
+
+        assertThat(result, is(false));
+    }
+
+    @Test
+    void testIsAvailable_TimeAfterServiceHours_ReturnsFalse() {
+        LocalTime timeSlot = LocalTime.of(18, 30); // After 18:00
+        when(serviceRequestRepository.findByMunicipalityAndRequestedDate(municipality, STATIC_DATE))
+            .thenReturn(Arrays.asList());
+
+        boolean result = service.isAvailable(municipality, STATIC_DATE, timeSlot);
+
+        assertThat(result, is(false));
+    }
+
+    @Test
+    void testIsAvailable_TimeExactly18_ReturnsFalse() {
+        LocalTime timeSlot = LocalTime.of(18, 0); // Exactly 18:00 - not available
+        when(serviceRequestRepository.findByMunicipalityAndRequestedDate(municipality, STATIC_DATE))
+            .thenReturn(Arrays.asList());
+
+        boolean result = service.isAvailable(municipality, STATIC_DATE, timeSlot);
+
+        assertThat(result, is(false));
+    }
+
+    @Test
+    void testIsAvailable_TimeExactly9_ReturnsTrue() {
+        LocalTime timeSlot = LocalTime.of(9, 0); // Exactly 09:00 - available
+        when(serviceRequestRepository.findByMunicipalityAndRequestedDate(municipality, STATIC_DATE))
+            .thenReturn(Arrays.asList());
+
+        boolean result = service.isAvailable(municipality, STATIC_DATE, timeSlot);
+
+        assertThat(result, is(true));
+    }
+
+    @Test
+    void testIsAvailable_TimeWithinServiceHours_ReturnsTrue() {
+        LocalTime timeSlot = LocalTime.of(14, 30); // Within service hours
+        when(serviceRequestRepository.findByMunicipalityAndRequestedDate(municipality, STATIC_DATE))
+            .thenReturn(Arrays.asList());
+
+        boolean result = service.isAvailable(municipality, STATIC_DATE, timeSlot);
+
+        assertThat(result, is(true));
+    }
+
+    @Test
+    void testIsAvailable_Time1759_ReturnsTrue() {
+        LocalTime timeSlot = LocalTime.of(17, 59); // Just before 18:00
+        when(serviceRequestRepository.findByMunicipalityAndRequestedDate(municipality, STATIC_DATE))
+            .thenReturn(Arrays.asList());
+
+        boolean result = service.isAvailable(municipality, STATIC_DATE, timeSlot);
+
+        assertThat(result, is(true));
+    }
+
+    @Test
+    void testIsAvailable_Time0859_ReturnsFalse() {
+        LocalTime timeSlot = LocalTime.of(8, 59); // Just before 09:00
+        when(serviceRequestRepository.findByMunicipalityAndRequestedDate(municipality, STATIC_DATE))
+            .thenReturn(Arrays.asList());
+
+        boolean result = service.isAvailable(municipality, STATIC_DATE, timeSlot);
+
+        assertThat(result, is(false));
+    }
 }

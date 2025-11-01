@@ -34,6 +34,7 @@ public class UserService {
 
         String hashedPassword = hashPassword(password);
         boolean authenticated = user.get().getPassword().equals(hashedPassword);
+        logger.info ("Expected password {} - {}",user.get().getPassword(),hashedPassword);
         if (authenticated) {
             logger.info("Authentication successful for user '{}'", name);
         } else {
@@ -60,7 +61,6 @@ public class UserService {
             }
             return hexString.toString();
         } catch (Exception e) {
-            // Logging the exception
             throw new IllegalStateException("SHA-256 algorithm not available", e);
         }
     }

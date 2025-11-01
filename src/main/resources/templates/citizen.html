@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citizen Portal - ZeroMonos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        .back-link {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .user-info {
+            float: right;
+            color: #666;
+        }
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #007bff;
+            cursor: pointer;
+            text-decoration: underline;
+            padding: 0;
+            margin-left: 10px;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .alert {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        .alert.show {
+            display: block;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .token-box {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            word-break: break-all;
+            display: none;
+        }
+        .token-box.show {
+            display: block;
+        }
+        .token-box strong {
+            color: #007bff;
+        }
+        .details-box {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .details-box p {
+            margin: 5px 0;
+        }
+        .status-history {
+            margin-top: 15px;
+        }
+        .status-item {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border-left: 3px solid #007bff;
+        }
+        .status-item strong {
+            display: block;
+        }
+        .status-item small {
+            color: #666;
+        }
+        .hidden {
+            display: none;
+        }
+        .cancel-btn {
+            background-color: #dc3545;
+            margin-top: 10px;
+        }
+        .cancel-btn:hover {
+            background-color: #c82333;
+        }
+        #loginSection {
+            max-width: 400px;
+            margin: 100px auto;
+        }
+        #mainContent {
+            display: none;
+        }
+        .my-requests-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .my-requests-table th,
+        .my-requests-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .my-requests-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .my-requests-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        .token-cell {
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        .use-token-btn {
+            padding: 5px 10px;
+            font-size: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .use-token-btn:hover {
+            background-color: #0056b3;
+        }
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .user-info {
+                float: none;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Section -->
+    <div id="loginSection">
+        <div class="card">
+            <h2>Citizen Login</h2>
+            <div id="loginAlert" class="alert"></div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginUsername">Username</label>
+                    <input type="text" id="loginUsername" required placeholder="Enter your username">
+                    <small style="color: #666;">Test users: John Doe, Maria Silva, Carlos Santos</small>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required placeholder="Enter your password">
+                    <small style="color: #666;">{name}123</small>
+                </div>
+                <button type="submit">Login</button>
+            </form>
+            <div style="margin-top: 20px; text-align: center;">
+                <a href="/" class="back-link">← Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content (shown after login) -->
+    <div id="mainContent">
+        <div class="header">
+            <a href="/" class="back-link">← Back to Home</a>
+            <div class="user-info">
+                Logged in as: <strong id="currentUser"></strong>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+            <h1>Citizen Portal</h1>
+            <p>Book garbage collection services and track your requests</p>
+        </div>
+
+        <div class="container">
+            <!-- Booking Form -->
+            <div class="card">
+                <h2>Book a Collection</h2>
+
+                <div id="bookingAlert" class="alert"></div>
+
+                <form id="bookingForm">
+                    <div class="form-group">
+                        <label for="municipality">Municipality *</label>
+                        <select id="municipality" required>
+                            <option value="">Loading...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="requestedDate">Collection Date *</label>
+                        <input type="date" id="requestedDate" required>
+                        <small style="color: #666;">Note: No service on Sundays</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="timeSlot">Time Slot (HH:MM) *</label>
+                        <input type="time" id="timeSlot" required min="09:00" max="18:00" step="900">
+                        <small style="color: #666;">Service hours: 09:00 - 18:00 (slots must be at least 1 hour apart)</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Item Description *</label>
+                        <textarea id="description" required placeholder="Describe items (e.g., old mattress, refrigerator...)"></textarea>
+                    </div>
+
+                    <button type="submit">Book Collection</button>
+                </form>
+
+                <div id="bookingResult" class="token-box">
+                    <strong>Booking Successful!</strong>
+                    <p>Your access token:</p>
+                    <p><strong id="generatedToken"></strong></p>
+                    <p></p><small>Save this token to check your request status.</small></p>
+                </div>
+            </div>
+
+            <!-- Status Check -->
+            <div class="card">
+                <h2>Check Request Status</h2>
+
+                <div id="statusAlert" class="alert"></div>
+
+                <form id="statusForm">
+                    <div class="form-group">
+                        <label for="token">Access Token *</label>
+                        <input type="text" id="token" required placeholder="Enter your booking token">
+                    </div>
+
+                    <button type="submit">Check Status</button>
+                </form>
+
+                <div id="statusResult" class="hidden">
+                    <div class="details-box">
+                        <h3>Request Details</h3>
+                        <p><strong>Municipality:</strong> <span id="detailMunicipality"></span></p>
+                        <p><strong>Date:</strong> <span id="detailDate"></span></p>
+                        <p><strong>Time:</strong> <span id="detailTime"></span></p>
+                        <p><strong>Description:</strong> <span id="detailDescription"></span></p>
+                        <p><strong>Citizen:</strong> <span id="detailUser"></span></p>
+                    </div>
+
+                    <h3>Status History</h3>
+                    <div id="statusHistory"></div>
+
+                    <button onclick="cancelRequest()" class="cancel-btn">Cancel Request</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Requests Section -->
+        <div class="card" style="margin-top: 20px;">
+            <h2>My Requests</h2>
+
+            <div id="myRequestsAlert" class="alert"></div>
+
+            <button onclick="loadMyRequests()" style="margin-bottom: 15px;">Refresh My Requests</button>
+
+            <div id="myRequestsSection">
+                <p id="myRequestsEmpty" style="text-align: center; color: #666; padding: 20px;">
+                    Click "Refresh My Requests" to load your bookings
+                </p>
+                <div id="myRequestsContent" class="hidden">
+                    <p>Total Requests: <strong id="myRequestsCount">0</strong></p>
+                    <table class="my-requests-table">
+                        <thead>
+                            <tr>
+                                <th>Token</th>
+                                <th>Municipality</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Created At</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="myRequestsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentToken = '';
+        let currentUsername = '';
+
+        // Set minimum date to today
+        document.getElementById('requestedDate').min = new Date().toISOString().split('T')[0];
+
+        // Check if user is logged in
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedUser = sessionStorage.getItem('citizenUser');
+            if (savedUser) {
+                currentUsername = savedUser;
+                showMainContent();
+            }
+        });
+
+        // Login form
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch('/users/authenticate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: username, password: password })
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result === true) {
+                        currentUsername = username;
+                        sessionStorage.setItem('citizenUser', username);
+                        showMainContent();
+                    } else {
+                        showAlert('loginAlert', 'Invalid username or password', 'error');
+                    }
+                } else {
+                    showAlert('loginAlert', 'Invalid username or password', 'error');
+                }
+            } catch (error) {
+                showAlert('loginAlert', 'Login failed. Please try again.', 'error');
+            }
+        });
+
+        function showMainContent() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            document.getElementById('currentUser').textContent = currentUsername;
+            loadMunicipalities();
+            loadMyRequests();
+        }
+
+        function logout() {
+            sessionStorage.removeItem('citizenUser');
+            currentUsername = '';
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('loginForm').reset();
+            document.getElementById('bookingForm').reset();
+            document.getElementById('statusForm').reset();
+            document.getElementById('bookingResult').classList.remove('show');
+            document.getElementById('statusResult').classList.add('hidden');
+            document.getElementById('myRequestsContent').classList.add('hidden');
+            document.getElementById('myRequestsEmpty').style.display = 'block';
+        }
+
+        // Load municipalities
+        async function loadMunicipalities() {
+            try {
+                const response = await fetch('/requests/municipalities');
+                const municipalities = await response.json();
+                const select = document.getElementById('municipality');
+                select.innerHTML = '<option value="">Select municipality</option>';
+                municipalities.forEach(mun => {
+                    const option = document.createElement('option');
+                    option.value = mun.name;
+                    option.textContent = mun.name;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                showAlert('bookingAlert', 'Failed to load municipalities', 'error');
+            }
+        }
+
+        // Booking form
+        document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const timeSlot = document.getElementById('timeSlot').value;
+
+            // Validate time is between 09:00 and 18:00
+            const [hours, minutes] = timeSlot.split(':').map(Number);
+            if (hours < 9 || hours >= 18) {
+                showAlert('bookingAlert', 'Time slot must be between 09:00 and 18:00', 'error');
+                return;
+            }
+
+            const data = {
+                user: currentUsername,
+                municipality: document.getElementById('municipality').value,
+                requestedDate: document.getElementById('requestedDate').value,
+                timeSlot: timeSlot,
+                description: document.getElementById('description').value
+            };
+
+            try {
+                const response = await fetch('/requests', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    document.getElementById('generatedToken').textContent = result.token;
+                    document.getElementById('bookingResult').classList.add('show');
+                    document.getElementById('bookingForm').reset();
+                    showAlert('bookingAlert', 'Booking created successfully!', 'success');
+                    // Reload my requests to show the new one
+                    setTimeout(() => loadMyRequests(), 1000);
+                } else {
+                    const error = await response.text();
+                    showAlert('bookingAlert', error, 'error');
+                }
+            } catch (error) {
+                showAlert('bookingAlert', 'Error creating booking', 'error');
+            }
+        });
+
+        // Status check form
+        document.getElementById('statusForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            currentToken = document.getElementById('token').value;
+            await loadStatus();
+        });
+
+        async function loadStatus() {
+            try {
+                const requestResponse = await fetch(`/requests/${currentToken}`);
+                if (!requestResponse.ok) {
+                    showAlert('statusAlert', 'Request not found', 'error');
+                    document.getElementById('statusResult').classList.add('hidden');
+                    return;
+                }
+
+                const request = await requestResponse.json();
+                const historyResponse = await fetch(`/requests/${currentToken}/history`);
+                const history = await historyResponse.json();
+
+                document.getElementById('detailMunicipality').textContent = request.municipality.name;
+                document.getElementById('detailDate').textContent = request.requestedDate;
+                document.getElementById('detailTime').textContent = request.timeSlot;
+                document.getElementById('detailDescription').textContent = request.description;
+                document.getElementById('detailUser').textContent = request.user.name;
+
+                const historyContainer = document.getElementById('statusHistory');
+                historyContainer.innerHTML = '';
+                history.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'status-item';
+                    div.innerHTML = `
+                        <strong>${item.status.replace(/_/g, ' ')}</strong>
+                        <small>${new Date(item.createdAt).toLocaleString()}</small>
+                    `;
+                    historyContainer.appendChild(div);
+                });
+
+                document.getElementById('statusResult').classList.remove('hidden');
+                showAlert('statusAlert', 'Request found', 'success');
+            } catch (error) {
+                showAlert('statusAlert', 'Error loading status', 'error');
+            }
+        }
+
+        async function cancelRequest() {
+            if (!confirm('Cancel this request?')) return;
+
+            try {
+                const response = await fetch(`/requests/${currentToken}`, { method: 'DELETE' });
+                if (response.ok) {
+                    showAlert('statusAlert', 'Request cancelled', 'success');
+                    setTimeout(() => loadStatus(), 1000);
+                } else {
+                    showAlert('statusAlert', 'Failed to cancel', 'error');
+                }
+            } catch (error) {
+                showAlert('statusAlert', 'Error cancelling request', 'error');
+            }
+        }
+
+        function showAlert(id, message, type) {
+            const alert = document.getElementById(id);
+            alert.className = `alert alert-${type} show`;
+            alert.textContent = message;
+            setTimeout(() => alert.classList.remove('show'), 5000);
+        }
+
+        // Load all requests for current user
+        async function loadMyRequests() {
+            try {
+                const response = await fetch(`/requests/user/${encodeURIComponent(currentUsername)}`);
+
+                if (!response.ok) {
+                    showAlert('myRequestsAlert', 'Failed to load your requests', 'error');
+                    return;
+                }
+
+                const requests = await response.json();
+                displayMyRequests(requests);
+
+            } catch (error) {
+                showAlert('myRequestsAlert', 'Error loading your requests', 'error');
+            }
+        }
+
+        function displayMyRequests(requests) {
+            const tbody = document.getElementById('myRequestsTableBody');
+            tbody.innerHTML = '';
+
+            if (requests.length === 0) {
+                document.getElementById('myRequestsEmpty').textContent = 'You have no service requests yet.';
+                document.getElementById('myRequestsEmpty').style.display = 'block';
+                document.getElementById('myRequestsContent').classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('myRequestsEmpty').style.display = 'none';
+            document.getElementById('myRequestsContent').classList.remove('hidden');
+            document.getElementById('myRequestsCount').textContent = requests.length;
+
+            requests.forEach(request => {
+                const row = tbody.insertRow();
+
+                // Token (shortened)
+                const tokenCell = row.insertCell();
+                tokenCell.className = 'token-cell';
+                const shortToken = request.token.substring(0, 12) + '...';
+                tokenCell.textContent = shortToken;
+                tokenCell.title = request.token;
+
+                // Municipality
+                row.insertCell().textContent = request.municipality.name;
+
+                // Date
+                row.insertCell().textContent = request.requestedDate;
+
+                // Time
+                row.insertCell().textContent = request.timeSlot;
+
+                // Created At - using lastUpdate as proxy for creation time
+                const createdCell = row.insertCell();
+                if (request.lastUpdate) {
+                    createdCell.textContent = new Date(request.lastUpdate).toLocaleString();
+                } else {
+                    createdCell.textContent = 'N/A';
+                }
+                // Action button
+                const actionCell = row.insertCell();
+                const btn = document.createElement('button');
+                btn.className = 'use-token-btn';
+                btn.textContent = 'Copy Token';
+                btn.onclick = async () => {
+                    try {
+                        await navigator.clipboard.writeText(request.token);
+                        btn.textContent = 'Copied!';
+                        setTimeout(() => {
+                            btn.textContent = 'Copy Token';
+                        }, 1500);
+                    } catch (err) {
+                        btn.textContent = 'Failed!';
+                        setTimeout(() => {
+                            btn.textContent = 'Copy Token';
+                        }, 1500);
+                    }
+                };
+                actionCell.appendChild(btn);
+            });
+
+            showAlert('myRequestsAlert', `Loaded ${requests.length} request(s)`, 'success');
+        }
+    </script>
+</body>
+</html>
