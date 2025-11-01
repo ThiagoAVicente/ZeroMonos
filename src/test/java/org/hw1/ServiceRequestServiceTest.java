@@ -45,6 +45,12 @@ class ServiceRequestServiceTest {
     static private Municipality municipality;
     static private ServiceRequest request;
 
+    static final LocalDate STATIC_DATE = LocalDate.of(2024, 6, 15);
+    static final LocalTime TIME1030 = LocalTime.of(10, 30);
+    static final LocalTime TIME1000 = LocalTime.of(10,0);
+    static final LocalTime TIME0930 = LocalTime.of(10,0);
+
+
     @BeforeAll
     static void initAll() throws Exception {
         user = new User();
@@ -65,8 +71,8 @@ class ServiceRequestServiceTest {
         request.setToken("test-token");
         request.setUser(user);
         request.setMunicipality(municipality);
-        request.setRequestedDate(LocalDate.now().plusDays(1));
-        request.setTimeSlot(LocalTime.of(10, 0));
+        request.setRequestedDate(STATIC_DATE);
+        request.setTimeSlot(TIME1000);
         request.setDescription("Test");
     }
 
@@ -82,15 +88,15 @@ class ServiceRequestServiceTest {
 
     @Test
     void testCreateServiceRequest() {
-        ServiceRequest created = service.createServiceRequest(user, municipality, LocalDate.now().plusDays(1),
+        ServiceRequest created = service.createServiceRequest(user, municipality, STATIC_DATE,
             LocalTime.of(10, 0), "Test");
 
         assertThat(created, notNullValue());
         assertThat(created.getUser(), is(user));
         assertThat(created.getMunicipality(), is(municipality));
         assertThat(created.getDescription(), is("Test"));
-        assertThat(created.getRequestedDate(), is(LocalDate.now().plusDays(1)));
-        assertThat(created.getTimeSlot(), is(LocalTime.of(10, 0)));
+        assertThat(created.getRequestedDate(), is(STATIC_DATE));
+        assertThat(created.getTimeSlot(), is(TIME1000));
     }
 
     @Test
@@ -99,10 +105,10 @@ class ServiceRequestServiceTest {
         if (!sunday.isAfter(LocalDate.now())) {
             sunday = sunday.plusWeeks(1);
         }
-        boolean available = service.isAvailable(municipality, sunday, LocalTime.of(10, 0));
+        boolean available = service.isAvailable(municipality, sunday, TIME1000);
         assertThat(available, is(false));
 
-        ServiceRequest created = service.createServiceRequest(user, municipality, sunday, LocalTime.of(10, 0), "Test on Sunday");
+        ServiceRequest created = service.createServiceRequest(user, municipality, sunday, TIME1000, "Test on Sunday");
         assertThat(created, nullValue());
     }
 
@@ -112,17 +118,17 @@ class ServiceRequestServiceTest {
         existing.setToken("conflict-token");
         existing.setUser(user);
         existing.setMunicipality(municipality);
-        existing.setRequestedDate(LocalDate.now().plusDays(2));
-        existing.setTimeSlot(LocalTime.of(10, 0));
+        existing.setRequestedDate(STATIC_DATE.plusDays(1));
+        existing.setTimeSlot(TIME1000);
         existing.setDescription("Existing");
 
         when(serviceRequestRepository.findByMunicipalityAndRequestedDate(eq(municipality), any(LocalDate.class)))
             .thenReturn(Arrays.asList(existing));
 
-        boolean available = service.isAvailable(municipality, LocalDate.now().plusDays(2), LocalTime.of(9, 30));
+        boolean available = service.isAvailable(municipality, STATIC_DATE.plusDays(1), TIME0930);
         assertThat(available, is(false));
 
-        ServiceRequest created = service.createServiceRequest(user, municipality, LocalDate.now().plusDays(2), LocalTime.of(9, 30), "Conflict before");
+        ServiceRequest created = service.createServiceRequest(user, municipality, STATIC_DATE.plusDays(1), TIME0930, "Conflict before");
         assertThat(created, nullValue());
     }
 
@@ -132,17 +138,17 @@ class ServiceRequestServiceTest {
         existing.setToken("conflict-token2");
         existing.setUser(user);
         existing.setMunicipality(municipality);
-        existing.setRequestedDate(LocalDate.now().plusDays(3));
-        existing.setTimeSlot(LocalTime.of(10, 0));
+        existing.setRequestedDate(STATIC_DATE);
+        existing.setTimeSlot(TIME1000);
         existing.setDescription("Existing");
 
         when(serviceRequestRepository.findByMunicipalityAndRequestedDate(eq(municipality), any(LocalDate.class)))
             .thenReturn(Arrays.asList(existing));
 
-        boolean available = service.isAvailable(municipality, LocalDate.now().plusDays(3), LocalTime.of(10, 30));
+        boolean available = service.isAvailable(municipality, STATIC_DATE, TIME1030);
         assertThat(available, is(false));
 
-        ServiceRequest created = service.createServiceRequest(user, municipality, LocalDate.now().plusDays(3), LocalTime.of(10, 30), "Conflict after");
+        ServiceRequest created = service.createServiceRequest(user, municipality, STATIC_DATE, TIME1030, "Conflict after");
         assertThat(created, nullValue());
     }
 
@@ -152,17 +158,17 @@ class ServiceRequestServiceTest {
         existing.setToken("conflict-token3");
         existing.setUser(user);
         existing.setMunicipality(municipality);
-        existing.setRequestedDate(LocalDate.now().plusDays(4));
-        existing.setTimeSlot(LocalTime.of(10, 0));
+        existing.setRequestedDate(STATIC_DATE.plusDays(3));
+        existing.setTimeSlot(TIME1000);
         existing.setDescription("Existing");
 
         when(serviceRequestRepository.findByMunicipalityAndRequestedDate(eq(municipality), any(LocalDate.class)))
             .thenReturn(Arrays.asList(existing));
 
-        boolean available = service.isAvailable(municipality, LocalDate.now().plusDays(4), LocalTime.of(10, 0));
+        boolean available = service.isAvailable(municipality, STATIC_DATE.plusDays(3), TIME1000);
         assertThat(available, is(false));
 
-        ServiceRequest created = service.createServiceRequest(user, municipality, LocalDate.now().plusDays(4), LocalTime.of(10, 0), "Conflict exact");
+        ServiceRequest created = service.createServiceRequest(user, municipality, STATIC_DATE.plusDays(3), TIME1000, "Conflict exact");
         assertThat(created, nullValue());
     }
 
@@ -226,8 +232,8 @@ class ServiceRequestServiceTest {
         assertThat(result, is(not(empty())));
         assertThat(result.get(0).getUser(), is(user));
         assertThat(result.get(0).getDescription(), is("Test"));
-        assertThat(result.get(0).getRequestedDate(), is(LocalDate.now().plusDays(1)));
-        assertThat(result.get(0).getTimeSlot(), is(LocalTime.of(10, 0)));
+        assertThat(result.get(0).getRequestedDate(), is(STATIC_DATE));
+        assertThat(result.get(0).getTimeSlot(), is(TIME1000));
         assertThat(result.get(0).getToken(), is("test-token"));
     }
     @Test
@@ -239,7 +245,7 @@ class ServiceRequestServiceTest {
     @Test
     void testIsAvailable() {
         when(serviceRequestRepository.findByMunicipality(municipality)).thenReturn(Arrays.asList());
-        boolean available = service.isAvailable(municipality, LocalDate.now().plusDays(1), LocalTime.of(10, 0));
+        boolean available = service.isAvailable(municipality, STATIC_DATE, TIME1000);
         assertThat(available, is(true));
     }
 }
