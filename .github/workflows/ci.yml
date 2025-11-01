@@ -50,13 +50,8 @@ jobs:
     - name: Build and analyze
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: |
-        mvn -B sonar:sonar \
-        -Dsonar.projectKey=ThiagoAVicente_ZeroMonos \
-        -Dsonar.host.url=https://sonarcloud.io \
-        -Dsonar.organization="thiagoavicente" \
-        -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-    # Stop app
+      run: mvn -B clean verify
+
     - name: Stop app
       if: always()
-      run: kill $(cat app.pid) || true
+      run: pkill -f "spring-boot:run" || true
