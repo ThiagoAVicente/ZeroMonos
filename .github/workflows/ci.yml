@@ -45,7 +45,7 @@ jobs:
       run: |
         mvn spring-boot:run &
         echo $! > app.pid
-        timeout 120 bash -c 'until curl -f http://localhost:8080/actuator/health > /dev/null 2>&1; do sleep 3; done' || (kill $(cat app.pid) && exit 1)
+        timeout 120 bash -c 'until curl -f http://localhost:8080 > /dev/null 2>&1; do sleep 3; done' || (kill $(cat app.pid) && exit 1)
 
     - name: Build and analyze
       env:

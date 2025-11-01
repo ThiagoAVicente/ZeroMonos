@@ -1,0 +1,162 @@
+nohup: ignoring input
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------------< org.example:HW1 >---------------------------
+[INFO] Building HW1 1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.3.4:run (default-cli) > test-compile @ HW1 >>>
+[INFO] 
+[INFO] --- jacoco:0.8.12:prepare-agent (prepare-agent) @ HW1 ---
+[INFO] argLine set to -javaagent:/home/vcnt/.m2/repository/org/jacoco/org.jacoco.agent/0.8.12/org.jacoco.agent-0.8.12-runtime.jar=destfile=/home/vcnt/Documents/uni/TQS/ZeroMonos/target/jacoco.exec
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ HW1 ---
+[INFO] Copying 2 resources from src/main/resources to target/classes
+[INFO] Copying 3 resources from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ HW1 ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ HW1 ---
+[INFO] Copying 2 resources from src/test/resources to target/test-classes
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ HW1 ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] <<< spring-boot:3.3.4:run (default-cli) < test-compile @ HW1 <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.3.4:run (default-cli) @ HW1 ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.4)
+
+2025-11-01T19:25:34.841Z  INFO 366923 --- [ZeroMonos] [  restartedMain] org.hw1.HW1Application                   : Starting HW1Application using Java 21.0.9 with PID 366923 (/home/vcnt/Documents/uni/TQS/ZeroMonos/target/classes started by vcnt in /home/vcnt/Documents/uni/TQS/ZeroMonos)
+2025-11-01T19:25:34.842Z  INFO 366923 --- [ZeroMonos] [  restartedMain] org.hw1.HW1Application                   : No active profile set, falling back to 1 default profile: "default"
+2025-11-01T19:25:34.864Z  INFO 366923 --- [ZeroMonos] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-11-01T19:25:34.864Z  INFO 366923 --- [ZeroMonos] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-11-01T19:25:35.190Z  INFO 366923 --- [ZeroMonos] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-11-01T19:25:35.229Z  INFO 366923 --- [ZeroMonos] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 34 ms. Found 4 JPA repository interfaces.
+2025-11-01T19:25:35.509Z  INFO 366923 --- [ZeroMonos] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-11-01T19:25:35.530Z  INFO 366923 --- [ZeroMonos] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-11-01T19:25:35.530Z  INFO 366923 --- [ZeroMonos] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2025-11-01T19:25:35.546Z  INFO 366923 --- [ZeroMonos] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-11-01T19:25:35.546Z  INFO 366923 --- [ZeroMonos] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 681 ms
+2025-11-01T19:25:35.568Z  INFO 366923 --- [ZeroMonos] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-11-01T19:25:35.648Z  INFO 366923 --- [ZeroMonos] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:zeromonos user=SA
+2025-11-01T19:25:35.649Z  INFO 366923 --- [ZeroMonos] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-11-01T19:25:35.654Z  INFO 366923 --- [ZeroMonos] [  restartedMain] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:zeromonos'
+2025-11-01T19:25:35.717Z  INFO 366923 --- [ZeroMonos] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-11-01T19:25:35.742Z  INFO 366923 --- [ZeroMonos] [  restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2025-11-01T19:25:35.756Z  INFO 366923 --- [ZeroMonos] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-11-01T19:25:35.864Z  INFO 366923 --- [ZeroMonos] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-11-01T19:25:35.882Z  WARN 366923 --- [ZeroMonos] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-11-01T19:25:36.261Z  INFO 366923 --- [ZeroMonos] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-11-01T19:25:36.267Z DEBUG 366923 --- [ZeroMonos] [  restartedMain] org.hibernate.SQL                        : 
+    drop table if exists municipalities cascade 
+2025-11-01T19:25:36.268Z DEBUG 366923 --- [ZeroMonos] [  restartedMain] org.hibernate.SQL                        : 
+    drop table if exists service_requests cascade 
+2025-11-01T19:25:36.269Z DEBUG 366923 --- [ZeroMonos] [  restartedMain] org.hibernate.SQL                        : 
+    drop table if exists service_status_history cascade 
+2025-11-01T19:25:36.269Z DEBUG 366923 --- [ZeroMonos] [  restartedMain] org.hibernate.SQL                        : 
+    drop table if exists users cascade 
+2025-11-01T19:25:36.271Z DEBUG 366923 --- [ZeroMonos] [  restartedMain] org.hibernate.SQL                        : 
+    create table municipalities (
+        id bigint generated by default as identity,
+        name varchar(100) not null unique,
+        primary key (id)
+    )
+2025-11-01T19:25:36.275Z DEBUG 366923 --- [ZeroMonos] [  restartedMain] org.hibernate.SQL                        : 
+    create table service_requests (
+        requested_date date not null,
+        time_slot time(6) not null,
+        id bigint generated by default as identity,
+        last_update timestamp(6),
+        municipality_id bigint not null,
+        user_id bigint not null,
+        token varchar(36) not null unique,
+        description varchar(255) not null,
+        primary key (id)
+    )
+2025-11-01T19:25:36.276Z DEBUG 366923 --- [ZeroMonos] [  restartedMain] org.hibernate.SQL                        : 
+    create table service_status_history (
+        created_at timestamp(6) not null,
+        id bigint generated by default as identity,
+        service_request_id bigint not null,
+        status enum ('ASSIGNED','CANCELLED','COMPLETED','IN_PROGRESS','RECEIVED') not null,
+        primary key (id),
+        constraint uk_request_status unique (service_request_id, status)
+    )
+2025-11-01T19:25:36.277Z DEBUG 366923 --- [ZeroMonos] [  restartedMain] org.hibernate.SQL                        : 
+    create table users (
+        is_staff boolean not null,
+        id bigint generated by default as identity,
+        name varchar(255) not null unique,
+        password varchar(255) not null,
+        primary key (id)
+    )
+2025-11-01T19:25:36.278Z DEBUG 366923 --- [ZeroMonos] [  restartedMain] org.hibernate.SQL                        : 
+    alter table if exists service_requests 
+       add constraint FK6k4l1lqw8a2ovjf8prvv8s59e 
+       foreign key (municipality_id) 
+       references municipalities
+2025-11-01T19:25:36.283Z DEBUG 366923 --- [ZeroMonos] [  restartedMain] org.hibernate.SQL                        : 
+    alter table if exists service_requests 
+       add constraint FKdnrpkrvtepdqqcxg1nqiq5edt 
+       foreign key (user_id) 
+       references users 
+       on delete cascade
+2025-11-01T19:25:36.284Z DEBUG 366923 --- [ZeroMonos] [  restartedMain] org.hibernate.SQL                        : 
+    alter table if exists service_status_history 
+       add constraint FK9urdewga8yb8sf1w3esu7yy2f 
+       foreign key (service_request_id) 
+       references service_requests 
+       on delete cascade
+2025-11-01T19:25:36.286Z  INFO 366923 --- [ZeroMonos] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-11-01T19:25:36.491Z  WARN 366923 --- [ZeroMonos] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-11-01T19:25:36.502Z  INFO 366923 --- [ZeroMonos] [  restartedMain] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page template: index
+2025-11-01T19:25:36.678Z  WARN 366923 --- [ZeroMonos] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : Unable to start LiveReload server
+2025-11-01T19:25:36.689Z  WARN 366923 --- [ZeroMonos] [  restartedMain] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2025-11-01T19:25:36.690Z  INFO 366923 --- [ZeroMonos] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-11-01T19:25:36.690Z DEBUG 366923 --- [ZeroMonos] [  restartedMain] org.hibernate.SQL                        : 
+    drop table if exists municipalities cascade 
+2025-11-01T19:25:36.692Z DEBUG 366923 --- [ZeroMonos] [  restartedMain] org.hibernate.SQL                        : 
+    drop table if exists service_requests cascade 
+2025-11-01T19:25:36.693Z DEBUG 366923 --- [ZeroMonos] [  restartedMain] org.hibernate.SQL                        : 
+    drop table if exists service_status_history cascade 
+2025-11-01T19:25:36.693Z DEBUG 366923 --- [ZeroMonos] [  restartedMain] org.hibernate.SQL                        : 
+    drop table if exists users cascade 
+2025-11-01T19:25:36.696Z  WARN 366923 --- [ZeroMonos] [  restartedMain] o.s.b.f.support.DisposableBeanAdapter    : Invocation of destroy method failed on bean with name 'inMemoryDatabaseShutdownExecutor': org.h2.jdbc.JdbcSQLNonTransientConnectionException: Database is already closed (to disable automatic closing at VM shutdown, add ";DB_CLOSE_ON_EXIT=FALSE" to the db URL) [90121-224]
+2025-11-01T19:25:36.697Z  INFO 366923 --- [ZeroMonos] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-11-01T19:25:36.698Z  INFO 366923 --- [ZeroMonos] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-11-01T19:25:36.705Z  INFO 366923 --- [ZeroMonos] [  restartedMain] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-11-01T19:25:36.714Z ERROR 366923 --- [ZeroMonos] [  restartedMain] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  3.077 s
+[INFO] Finished at: 2025-11-01T19:25:36Z
+[INFO] ------------------------------------------------------------------------
