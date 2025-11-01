@@ -28,7 +28,7 @@ Feature: Citizen Portal
     Given I am on the citizen portal page
     And I am logged in as "Maria Silva" with password "maria123"
     When I select municipality "Lisboa"
-    And I select date "2024-12-25"
+    And I select date "2026-12-25"
     And I select time "10:00"
     And I enter description "Mesa"
     And I submit the booking

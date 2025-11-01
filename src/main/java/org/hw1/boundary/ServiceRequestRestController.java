@@ -105,7 +105,12 @@ public class ServiceRequestRestController {
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             logger.error("Failed to cancel ServiceRequest for token: {}. Error: {}", token, e.getMessage());
-            return ResponseEntity.notFound().build();
+            if (e.getMessage().contains("not found")) {
+                return ResponseEntity.notFound().build();
+            } else if (e.getMessage().contains("Cannot cancel")) {
+                return ResponseEntity.badRequest().body(e.getMessage());
+            }
+            return ResponseEntity.status(500).body("Internal server error");
         }
     }
 

@@ -1,3 +1,0 @@
-cada slot demora +- 1H
-é possivel reservar desde que não haja conflito com outras reservas
-não pode reservar ao domingo

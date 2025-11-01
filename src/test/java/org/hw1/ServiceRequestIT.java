@@ -49,7 +49,7 @@ class ServiceRequestIT {
         String requestBody = "{"
                 + "\"user\": \"Test User\","
                 + "\"municipality\": \"Lisboa\","
-                + "\"requestedDate\": \"2025-11-01\","
+                + "\"requestedDate\": \"2026-11-01\","
                 + "\"timeSlot\": \"10:00\","
                 + "\"description\": \"Mesa velha\""
                 + "}";
@@ -72,7 +72,7 @@ class ServiceRequestIT {
         String requestBody = "{"
                 + "\"user\": \"Test User\","
                 + "\"municipality\": \"MunicípioInexistente\","
-                + "\"requestedDate\": \"2025-11-01\","
+                + "\"requestedDate\": \"2026-11-01\","
                 + "\"timeSlot\": \"10:00\","
                 + "\"description\": \"Teste inválido\""
                 + "}";
@@ -92,7 +92,7 @@ class ServiceRequestIT {
         String requestBody = "{"
                 + "\"user\": \"UtilizadorInexistente\","
                 + "\"municipality\": \"Lisboa\","
-                + "\"requestedDate\": \"2025-11-01\","
+                + "\"requestedDate\": \"2026-11-01\","
                 + "\"timeSlot\": \"10:00\","
                 + "\"description\": \"Teste inválido\""
                 + "}";
@@ -112,7 +112,7 @@ class ServiceRequestIT {
         String requestBody = "{"
                 + "\"user\": \"Test User\","
                 + "\"municipality\": \"Lisboa\","
-                + "\"requestedDate\": \"01-11-2025\","
+                + "\"requestedDate\": \"01-11-2026\","
                 + "\"timeSlot\": \"10:00\","
                 + "\"description\": \"Data inválida\""
                 + "}";
@@ -132,7 +132,7 @@ class ServiceRequestIT {
         String requestBody = "{"
                 + "\"user\": \"Test User\","
                 + "\"municipality\": \"Lisboa\","
-                + "\"requestedDate\": \"2025-11-01\","
+                + "\"requestedDate\": \"2026-11-01\","
                 + "\"timeSlot\": \"10h\","
                 + "\"description\": \"Hora inválida\""
                 + "}";
@@ -226,7 +226,7 @@ class ServiceRequestIT {
         String requestBody = "{"
                 + "\"user\": \"Test User\","
                 + "\"municipality\": \"Lisboa\","
-                + "\"requestedDate\": \"2025-11-05\","
+                + "\"requestedDate\": \"2026-11-05\","
                 + "\"timeSlot\": \"14:00\","
                 + "\"description\": \"Test item\""
                 + "}";

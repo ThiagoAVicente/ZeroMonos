@@ -45,7 +45,7 @@ class ServiceRequestServiceTest {
     static private Municipality municipality;
     static private ServiceRequest request;
 
-    static final LocalDate STATIC_DATE = LocalDate.of(2024, 6, 15);
+    static final LocalDate STATIC_DATE = LocalDate.of(2026, 6, 15);
     static final LocalTime TIME1030 = LocalTime.of(10, 30);
     static final LocalTime TIME1000 = LocalTime.of(10,0);
     static final LocalTime TIME0930 = LocalTime.of(10,0);
@@ -109,6 +109,16 @@ class ServiceRequestServiceTest {
         assertThat(available, is(false));
 
         ServiceRequest created = service.createServiceRequest(user, municipality, sunday, TIME1000, "Test on Sunday");
+        assertThat(created, nullValue());
+    }
+
+    @Test
+    void testCreateServiceRequestNotAvailablePastDate() {
+        LocalDate pastDate = LocalDate.now().minusDays(1);
+        boolean available = service.isAvailable(municipality, pastDate, TIME1000);
+        assertThat(available, is(false));
+
+        ServiceRequest created = service.createServiceRequest(user, municipality, pastDate, TIME1000, "Test in the past");
         assertThat(created, nullValue());
     }
 
@@ -182,8 +192,87 @@ class ServiceRequestServiceTest {
 
     @Test
     void testCancelServiceRequest() throws Exception {
+        ServiceStatusHistory history = new ServiceStatusHistory();
+        history.setServiceRequest(request);
+        history.setStatus(Status.RECEIVED);
+        history.setCreatedAt(LocalDateTime.now());
+
         when(serviceRequestRepository.findByToken("test-token")).thenReturn(Optional.of(request));
+        when(serviceStatusHistoryRepository.findByServiceRequestOrderByCreatedAtDesc(request))
+            .thenReturn(Arrays.asList(history));
+
         assertDoesNotThrow(() -> service.cancelServiceRequest("test-token"));
+    }
+
+    @Test
+    void testCancelServiceRequest_WithAssignedStatus() throws Exception {
+        ServiceStatusHistory history = new ServiceStatusHistory();
+        history.setServiceRequest(request);
+        history.setStatus(Status.ASSIGNED);
+        history.setCreatedAt(LocalDateTime.now());
+
+        when(serviceRequestRepository.findByToken("test-token")).thenReturn(Optional.of(request));
+        when(serviceStatusHistoryRepository.findByServiceRequestOrderByCreatedAtDesc(request))
+            .thenReturn(Arrays.asList(history));
+
+        assertDoesNotThrow(() -> service.cancelServiceRequest("test-token"));
+    }
+
+    @Test
+    void testCancelServiceRequest_InProgressStatus_ThrowsException() {
+        ServiceStatusHistory history = new ServiceStatusHistory();
+        history.setServiceRequest(request);
+        history.setStatus(Status.IN_PROGRESS);
+        history.setCreatedAt(LocalDateTime.now());
+
+        when(serviceRequestRepository.findByToken("test-token")).thenReturn(Optional.of(request));
+        when(serviceStatusHistoryRepository.findByServiceRequestOrderByCreatedAtDesc(request))
+            .thenReturn(Arrays.asList(history));
+
+        Exception exception = assertThrows(Exception.class, () -> {
+            service.cancelServiceRequest("test-token");
+        });
+
+        assertThat(exception.getMessage(), containsString("Cannot cancel request"));
+        assertThat(exception.getMessage(), containsString("IN_PROGRESS"));
+    }
+
+    @Test
+    void testCancelServiceRequest_CompletedStatus_ThrowsException() {
+        ServiceStatusHistory history = new ServiceStatusHistory();
+        history.setServiceRequest(request);
+        history.setStatus(Status.COMPLETED);
+        history.setCreatedAt(LocalDateTime.now());
+
+        when(serviceRequestRepository.findByToken("test-token")).thenReturn(Optional.of(request));
+        when(serviceStatusHistoryRepository.findByServiceRequestOrderByCreatedAtDesc(request))
+            .thenReturn(Arrays.asList(history));
+
+        Exception exception = assertThrows(Exception.class, () -> {
+            service.cancelServiceRequest("test-token");
+        });
+
+        assertThat(exception.getMessage(), containsString("Cannot cancel request"));
+        assertThat(exception.getMessage(), containsString("COMPLETED"));
+    }
+
+    @Test
+    void testCancelServiceRequest_CancelledStatus_ThrowsException() {
+        ServiceStatusHistory history = new ServiceStatusHistory();
+        history.setServiceRequest(request);
+        history.setStatus(Status.CANCELLED);
+        history.setCreatedAt(LocalDateTime.now());
+
+        when(serviceRequestRepository.findByToken("test-token")).thenReturn(Optional.of(request));
+        when(serviceStatusHistoryRepository.findByServiceRequestOrderByCreatedAtDesc(request))
+            .thenReturn(Arrays.asList(history));
+
+        Exception exception = assertThrows(Exception.class, () -> {
+            service.cancelServiceRequest("test-token");
+        });
+
+        assertThat(exception.getMessage(), containsString("Cannot cancel request"));
+        assertThat(exception.getMessage(), containsString("CANCELLED"));
     }
 
     @Test

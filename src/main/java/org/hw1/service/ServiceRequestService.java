@@ -77,6 +77,21 @@ public class ServiceRequestService {
                 return new Exception("Service request not found");
             });
 
+        // get current status
+        List<ServiceStatusHistory> history = serviceStatusHistoryRepository.findByServiceRequestOrderByCreatedAtDesc(request);
+        if (history.isEmpty()) {
+            logger.error("No status history found for token: {}", token);
+            throw new Exception("Service request has no status history");
+        }
+
+        Status currentStatus = history.get(0).getStatus();
+        
+        // only allow cancellation if status is RECEIVED or ASSIGNED
+        if (currentStatus != Status.RECEIVED && currentStatus != Status.ASSIGNED) {
+            logger.warn("Cannot cancel service request with token: {} - current status is: {}", token, currentStatus);
+            throw new Exception("Cannot cancel request. Current status is: " + currentStatus);
+        }
+
         // update status to CANCELLED
         addStatusHistoryEntry(request, Status.CANCELLED);
         logger.info("Service request with token: {} cancelled", token);
@@ -130,6 +145,13 @@ public class ServiceRequestService {
         LocalTime timeSlot){
         logger.debug("Checking availability for municipality: {}, date: {}, time_slot: {}",
             municipality != null ? municipality.getName() : null, date, timeSlot);
+        
+        // check if date is in the past
+        if (date.isBefore(LocalDate.now())) {
+            logger.info("Requested date {} is in the past, not available.", date);
+            return false;
+        }
+        
         // check if is a sunday
         if (date.getDayOfWeek().getValue() == 7) {
             logger.info("Requested date is a Sunday, not available.");
