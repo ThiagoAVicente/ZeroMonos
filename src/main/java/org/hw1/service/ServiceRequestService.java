@@ -53,8 +53,7 @@ public class ServiceRequestService {
         request.setToken(token);
 
         if (!isAvailable(municipality, requestedDate, timeSlot)) {
-            logger.warn("Requested slot not available for municipality: {}, date: {}, timeSlot: {}",
-                municipality != null ? municipality.getName() : null, requestedDate, timeSlot);
+            logger.warn("Requested slot not available for municipality: {}, date: {}, timeSlot: {}",municipality.getName(), requestedDate, timeSlot);
             return null;
         }
         ServiceRequest r = serviceRequestRepository.save(request);
@@ -79,11 +78,6 @@ public class ServiceRequestService {
 
         // get current status
         List<ServiceStatusHistory> history = serviceStatusHistoryRepository.findByServiceRequestOrderByCreatedAtDesc(request);
-        if (history.isEmpty()) {
-            logger.error("No status history found for token: {}", token);
-            throw new Exception("Service request has no status history");
-        }
-
         Status currentStatus = history.get(0).getStatus();
 
         // only allow cancellation if status is RECEIVED or ASSIGNED
