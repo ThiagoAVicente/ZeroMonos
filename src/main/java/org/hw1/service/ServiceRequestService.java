@@ -38,8 +38,8 @@ public class ServiceRequestService {
 
     public ServiceRequest createServiceRequest(User user, Municipality municipality, LocalDate requestedDate, LocalTime timeSlot, String description) {
         logger.info("Creating service request for user: {}, municipality: {}, date: {}, timeSlot: {}",
-            user != null ? user.getId() : null,
-            municipality != null ? municipality.getName() : null,
+            user.getId(),
+            unicipality.getName(),
             requestedDate,
             timeSlot);
         ServiceRequest request = new ServiceRequest();
