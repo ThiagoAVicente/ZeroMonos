@@ -46,7 +46,7 @@ ZeroMonos supports two main user roles:
 For detailed user scenarios—such as booking a service, logging in, and managing requests—see the [feature files](src/test/resources/features).
 
 ## Database
-![ER](images/hw1_er_diagram.png)
+![ER](docs/hw1_er_diagram.png)
 
 ## H2
 By default, the project uses H2 as the database.
@@ -72,3 +72,6 @@ Then start the application with:
 ```bash
 mvn spring-boot:run
 ```
+
+## Demo
+![Demo](docs/demo.gif)
