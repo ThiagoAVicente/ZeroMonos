@@ -8,3 +8,6 @@ bin/
 .idea/
 .obsidian
 .env
+app.log
+app.pid
+performance-results
