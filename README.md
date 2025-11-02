@@ -1,4 +1,4 @@
-# ZeroMonos
+# ZeroMonos [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ThiagoAVicente_ZeroMonos&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ThiagoAVicente_ZeroMonos)
 
 A simple web application for citizens to book item collection services and for staff to manage those requests.
 
