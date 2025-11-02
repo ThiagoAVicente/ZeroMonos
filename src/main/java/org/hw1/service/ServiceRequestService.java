@@ -39,7 +39,7 @@ public class ServiceRequestService {
     public ServiceRequest createServiceRequest(User user, Municipality municipality, LocalDate requestedDate, LocalTime timeSlot, String description) {
         logger.info("Creating service request for user: {}, municipality: {}, date: {}, timeSlot: {}",
             user.getId(),
-            unicipality.getName(),
+            municipality.getName(),
             requestedDate,
             timeSlot);
         ServiceRequest request = new ServiceRequest();
