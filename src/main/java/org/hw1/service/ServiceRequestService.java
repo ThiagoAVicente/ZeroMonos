@@ -115,24 +115,18 @@ public class ServiceRequestService {
     }
 
     public List<ServiceRequest> getServiceRequestsByMunicipality(Municipality municipality) {
-        logger.info("Fetching service requests for municipality: {}", municipality != null ? municipality.getName() : null);
+        logger.info("Fetching service requests for municipality: {}", municipality.getName());
         return serviceRequestRepository.findByMunicipality(municipality);
     }
 
     public List<ServiceRequest> getServiceRequestsByUser(User user) {
-        if (user == null) {
-            logger.warn("User is null when fetching service requests by user.");
-            return List.of();
-        }
-
         logger.info("Fetching service requests for user: {}",user.getId());
         // check if user exists
         return serviceRequestRepository.findByUserId(user.getId());
     }
 
     public void addStatusHistoryEntry(ServiceRequest request, Status status) {
-        logger.info("Adding status history entry for request token: {}, status: {}",
-            request != null ? request.getToken() : null, status);
+        logger.info("Adding status history entry for request token: {}, status: {}",request.getToken(), status);
         ServiceStatusHistory history = new ServiceStatusHistory();
         history.setServiceRequest(request);
         history.setStatus(status);
@@ -142,8 +136,7 @@ public class ServiceRequestService {
     public boolean isAvailable(Municipality municipality,
         LocalDate date,
         LocalTime timeSlot){
-        logger.debug("Checking availability for municipality: {}, date: {}, time_slot: {}",
-            municipality != null ? municipality.getName() : null, date, timeSlot);
+        logger.debug("Checking availability for municipality: {}, date: {}, time_slot: {}",municipality.getName(), date, timeSlot);
 
         // check if date is in the past
         if (date.isBefore(LocalDate.now())) {

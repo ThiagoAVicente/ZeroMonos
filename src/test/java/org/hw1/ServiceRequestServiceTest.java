@@ -340,7 +340,7 @@ class ServiceRequestServiceTest {
 
     @Test
     void testIsAvailable_TimeBeforeServiceHours_ReturnsFalse() {
-        LocalTime timeSlot = LocalTime.of(8, 30); // Before 09:00
+        LocalTime timeSlot = LocalTime.of(8, 30);
         when(serviceRequestRepository.findByMunicipalityAndRequestedDate(municipality, STATIC_DATE))
             .thenReturn(Arrays.asList());
 
@@ -351,7 +351,7 @@ class ServiceRequestServiceTest {
 
     @Test
     void testIsAvailable_TimeAfterServiceHours_ReturnsFalse() {
-        LocalTime timeSlot = LocalTime.of(18, 30); // After 18:00
+        LocalTime timeSlot = LocalTime.of(18, 30);
         when(serviceRequestRepository.findByMunicipalityAndRequestedDate(municipality, STATIC_DATE))
             .thenReturn(Arrays.asList());
 
@@ -362,7 +362,7 @@ class ServiceRequestServiceTest {
 
     @Test
     void testIsAvailable_TimeExactly18_ReturnsFalse() {
-        LocalTime timeSlot = LocalTime.of(18, 0); // Exactly 18:00 - not available
+        LocalTime timeSlot = LocalTime.of(18, 0);
         when(serviceRequestRepository.findByMunicipalityAndRequestedDate(municipality, STATIC_DATE))
             .thenReturn(Arrays.asList());
 
@@ -373,7 +373,7 @@ class ServiceRequestServiceTest {
 
     @Test
     void testIsAvailable_TimeExactly9_ReturnsTrue() {
-        LocalTime timeSlot = LocalTime.of(9, 0); // Exactly 09:00 - available
+        LocalTime timeSlot = LocalTime.of(9, 0);
         when(serviceRequestRepository.findByMunicipalityAndRequestedDate(municipality, STATIC_DATE))
             .thenReturn(Arrays.asList());
 
@@ -384,7 +384,7 @@ class ServiceRequestServiceTest {
 
     @Test
     void testIsAvailable_TimeWithinServiceHours_ReturnsTrue() {
-        LocalTime timeSlot = LocalTime.of(14, 30); // Within service hours
+        LocalTime timeSlot = LocalTime.of(14, 30);
         when(serviceRequestRepository.findByMunicipalityAndRequestedDate(municipality, STATIC_DATE))
             .thenReturn(Arrays.asList());
 
@@ -395,7 +395,7 @@ class ServiceRequestServiceTest {
 
     @Test
     void testIsAvailable_Time1759_ReturnsTrue() {
-        LocalTime timeSlot = LocalTime.of(17, 59); // Just before 18:00
+        LocalTime timeSlot = LocalTime.of(17, 59);
         when(serviceRequestRepository.findByMunicipalityAndRequestedDate(municipality, STATIC_DATE))
             .thenReturn(Arrays.asList());
 
