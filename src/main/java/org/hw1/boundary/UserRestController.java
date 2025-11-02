@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 
 @RestController
 @RequestMapping("/users")
+@Tag(name = "User Authentication")
 public class UserRestController {
     private static final Logger logger = LoggerFactory.getLogger(UserRestController.class);
 
