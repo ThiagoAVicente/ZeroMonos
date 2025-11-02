@@ -114,14 +114,12 @@ public class ServiceRequestRestController {
             serviceRequestService.cancelServiceRequest(token);
             logger.info("ServiceRequest cancelled for token: {}", token);
             return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            logger.error("Failed to cancel ServiceRequest for token: {}. Error: {}", token, e.getMessage());
-            if (e.getMessage().contains("not found")) {
-                return ResponseEntity.notFound().build();
-            } else if (e.getMessage().contains("Cannot cancel")) {
-                return ResponseEntity.badRequest().build();
-            }
-            return ResponseEntity.status(500).build();
+        } catch (ResourceNotFoundException e) {
+            logger.error("Request not found for token: {}. Error: {}", token, e.getMessage());
+            return ResponseEntity.notFound().build();
+        } catch (InvalidStatusTransitionException e) {
+            logger.error("Cannot cancel request with token: {}. Error: {}", token, e.getMessage());
+            return ResponseEntity.badRequest().build();
         }
     }
 
@@ -153,9 +151,12 @@ public class ServiceRequestRestController {
             serviceRequestService.updateServiceRequestStatus(token, status);
             logger.info("ServiceRequest status updated for token: {}", token);
             return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            logger.error("Failed to update status for token: {}. Error: {}", token, e.getMessage());
+        } catch (ResourceNotFoundException e) {
+            logger.error("Request not found for token: {}. Error: {}", token, e.getMessage());
             return ResponseEntity.notFound().build();
+        } catch (InvalidStatusTransitionException e) {
+            logger.error("Invalid status transition for token: {}. Error: {}", token, e.getMessage());
+            return ResponseEntity.badRequest().build();
         }
     }
 
@@ -166,10 +167,10 @@ public class ServiceRequestRestController {
         logger.info("Received getServiceStatusHistory for token: {}", token);
         try {
             List<ServiceStatusHistory> history = serviceRequestService.getServiceStatusHistory(token);
-            logger.info("Found {} status history entries for token: {}", history.size(), token);
+            logger.info("ServiceStatusHistory retrieved for token: {}", token);
             return ResponseEntity.ok(history);
-        } catch (Exception e) {
-            logger.error("Failed to get status history for token: {}. Error: {}", token, e.getMessage());
+        } catch (ResourceNotFoundException e) {
+            logger.error("Failed to retrieve history for token: {}. Error: {}", token, e.getMessage());
             return ResponseEntity.notFound().build();
         }
     }

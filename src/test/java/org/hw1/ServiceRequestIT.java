@@ -272,4 +272,271 @@ class ServiceRequestIT {
             .statusCode(200)
             .body("$", empty());
     }
+
+    @Test
+    void testUpdateServiceRequestStatus_ValidForwardTransition() {
+        String requestBody = "{"
+                + "\"user\": \"Test User\","
+                + "\"municipality\": \"Lisboa\","
+                + "\"requestedDate\": \"2026-11-06\","
+                + "\"timeSlot\": \"15:00\","
+                + "\"description\": \"Test status transition\""
+                + "}";
+
+        String token = given()
+            .port(port)
+            .contentType(ContentType.JSON)
+            .body(requestBody)
+        .when()
+            .post("/requests")
+        .then()
+            .statusCode(200)
+            .extract().path("token");
+
+        // Update to ASSIGNED
+        given()
+            .port(port)
+            .contentType(ContentType.JSON)
+            .body("\"ASSIGNED\"")
+        .when()
+            .put("/requests/" + token + "/status")
+        .then()
+            .statusCode(200);
+
+        // Update to IN_PROGRESS
+        given()
+            .port(port)
+            .contentType(ContentType.JSON)
+            .body("\"IN_PROGRESS\"")
+        .when()
+            .put("/requests/" + token + "/status")
+        .then()
+            .statusCode(200);
+
+        // Update to COMPLETED
+        given()
+            .port(port)
+            .contentType(ContentType.JSON)
+            .body("\"COMPLETED\"")
+        .when()
+            .put("/requests/" + token + "/status")
+        .then()
+            .statusCode(200);
+    }
+
+    @Test
+    void testUpdateServiceRequestStatus_BackwardTransitionNotAllowed() {
+        // Create a service request
+        String requestBody = "{"
+                + "\"user\": \"Test User\","
+                + "\"municipality\": \"Porto\","
+                + "\"requestedDate\": \"2026-11-07\","
+                + "\"timeSlot\": \"16:00\","
+                + "\"description\": \"Test backward transition\""
+                + "}";
+
+        String token = given()
+            .port(port)
+            .contentType(ContentType.JSON)
+            .body(requestBody)
+        .when()
+            .post("/requests")
+        .then()
+            .statusCode(200)
+            .extract().path("token");
+
+        // Update to ASSIGNED
+        given()
+            .port(port)
+            .contentType(ContentType.JSON)
+            .body("\"ASSIGNED\"")
+        .when()
+            .put("/requests/" + token + "/status")
+        .then()
+            .statusCode(200);
+
+        // Try to move backward to RECEIVED
+        given()
+            .port(port)
+            .contentType(ContentType.JSON)
+            .body("\"RECEIVED\"")
+        .when()
+            .put("/requests/" + token + "/status")
+        .then()
+            .statusCode(400);
+    }
+
+    @Test
+    void testUpdateServiceRequestStatus_SameStatusNotAllowed() {
+        // Create a service request
+        String requestBody = "{"
+                + "\"user\": \"Test User\","
+                + "\"municipality\": \"Braga\","
+                + "\"requestedDate\": \"2026-11-09\","
+                + "\"timeSlot\": \"17:00\","
+                + "\"description\": \"Test same status\""
+                + "}";
+
+        String token = given()
+            .port(port)
+            .contentType(ContentType.JSON)
+            .body(requestBody)
+        .when()
+            .post("/requests")
+        .then()
+            .statusCode(200)
+            .extract().path("token");
+
+        // Update to ASSIGNED
+        given()
+            .port(port)
+            .contentType(ContentType.JSON)
+            .body("\"ASSIGNED\"")
+        .when()
+            .put("/requests/" + token + "/status")
+        .then()
+            .statusCode(200);
+
+        // Try to set same status again
+        given()
+            .port(port)
+            .contentType(ContentType.JSON)
+            .body("\"ASSIGNED\"")
+        .when()
+            .put("/requests/" + token + "/status")
+        .then()
+            .statusCode(400);
+    }
+
+    @Test
+    void testUpdateServiceRequestStatus_AfterCompletedNotAllowed() {
+        // Create a service request
+        String requestBody = "{"
+                + "\"user\": \"Test User\","
+                + "\"municipality\": \"Coimbra\","
+                + "\"requestedDate\": \"2026-11-10\","
+                + "\"timeSlot\": \"13:00\","
+                + "\"description\": \"Test after completed\""
+                + "}";
+
+        String token = given()
+            .port(port)
+            .contentType(ContentType.JSON)
+            .body(requestBody)
+        .when()
+            .post("/requests")
+        .then()
+            .statusCode(200)
+            .extract().path("token");
+
+        // Progress through workflow to COMPLETED
+        given()
+            .port(port)
+            .contentType(ContentType.JSON)
+            .body("\"ASSIGNED\"")
+        .when()
+            .put("/requests/" + token + "/status")
+        .then()
+            .statusCode(200);
+
+        given()
+            .port(port)
+            .contentType(ContentType.JSON)
+            .body("\"IN_PROGRESS\"")
+        .when()
+            .put("/requests/" + token + "/status")
+        .then()
+            .statusCode(200);
+
+        given()
+            .port(port)
+            .contentType(ContentType.JSON)
+            .body("\"COMPLETED\"")
+        .when()
+            .put("/requests/" + token + "/status")
+        .then()
+            .statusCode(200);
+
+        // Try to change status after COMPLETED
+        given()
+            .port(port)
+            .contentType(ContentType.JSON)
+            .body("\"IN_PROGRESS\"")
+        .when()
+            .put("/requests/" + token + "/status")
+        .then()
+            .statusCode(400);
+    }
+
+    @Test
+    void testUpdateServiceRequestStatus_AfterCancelledNotAllowed() {
+        // Create a service request
+        String requestBody = "{"
+                + "\"user\": \"Test User\","
+                + "\"municipality\": \"Faro\","
+                + "\"requestedDate\": \"2026-11-11\","
+                + "\"timeSlot\": \"12:00\","
+                + "\"description\": \"Test after cancelled\""
+                + "}";
+
+        String token = given()
+            .port(port)
+            .contentType(ContentType.JSON)
+            .body(requestBody)
+        .when()
+            .post("/requests")
+        .then()
+            .statusCode(200)
+            .extract().path("token");
+
+        // Cancel the request
+        given()
+            .port(port)
+        .when()
+            .delete("/requests/" + token)
+        .then()
+            .statusCode(200);
+
+        // Try to change status after CANCELLED
+        given()
+            .port(port)
+            .contentType(ContentType.JSON)
+            .body("\"ASSIGNED\"")
+        .when()
+            .put("/requests/" + token + "/status")
+        .then()
+            .statusCode(400);
+    }
+
+    @Test
+    void testUpdateServiceRequestStatus_DirectCancelledNotAllowed() {
+        // Create a service request
+        String requestBody = "{"
+                + "\"user\": \"Test User\","
+                + "\"municipality\": \"Évora\","
+                + "\"requestedDate\": \"2026-11-12\","
+                + "\"timeSlot\": \"11:00\","
+                + "\"description\": \"Test direct cancelled\""
+                + "}";
+
+        String token = given()
+            .port(port)
+            .contentType(ContentType.JSON)
+            .body(requestBody)
+        .when()
+            .post("/requests")
+        .then()
+            .statusCode(200)
+            .extract().path("token");
+
+        // Try to set CANCELLED directly via status update
+        given()
+            .port(port)
+            .contentType(ContentType.JSON)
+            .body("\"CANCELLED\"")
+        .when()
+            .put("/requests/" + token + "/status")
+        .then()
+            .statusCode(400);
+    }
 }

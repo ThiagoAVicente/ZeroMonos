@@ -7,6 +7,8 @@ import org.hw1.data.ServiceStatusHistory;
 import org.hw1.data.User;
 import org.hw1.data.ServiceRequestRepository;
 import org.hw1.data.ServiceStatusHistoryRepository;
+import org.hw1.boundary.ResourceNotFoundException;
+import org.hw1.boundary.InvalidStatusTransitionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -67,13 +69,13 @@ public class ServiceRequestService {
         return serviceRequestRepository.findByToken(token);
     }
 
-    public void cancelServiceRequest(String token) throws Exception {
+    public void cancelServiceRequest(String token) throws ResourceNotFoundException, InvalidStatusTransitionException {
         logger.info("Cancelling service request with token: {}", token);
         // check if request exists
         ServiceRequest request = serviceRequestRepository.findByToken(token)
             .orElseThrow(() -> {
                 logger.error(TOKENNOTFOUND, token);
-                return new Exception("Service request not found");
+                return new ResourceNotFoundException("Service request not found");
             });
 
         // get current status
@@ -83,7 +85,7 @@ public class ServiceRequestService {
         // only allow cancellation if status is RECEIVED or ASSIGNED
         if (currentStatus != Status.RECEIVED && currentStatus != Status.ASSIGNED) {
             logger.warn("Cannot cancel service request with token: {} - current status is: {}", token, currentStatus);
-            throw new Exception("Cannot cancel request. Current status is: " + currentStatus);
+            throw new InvalidStatusTransitionException("Cannot cancel request. Current status is: " + currentStatus);
         }
 
         // update status to CANCELLED
@@ -91,24 +93,33 @@ public class ServiceRequestService {
         logger.info("Service request with token: {} cancelled", token);
     }
 
-    public List<ServiceStatusHistory> getServiceStatusHistory(String token) throws Exception {
+    public List<ServiceStatusHistory> getServiceStatusHistory(String token) throws ResourceNotFoundException {
         logger.info("Fetching service status history for token: {}", token);
         ServiceRequest request = serviceRequestRepository.findByToken(token)
             .orElseThrow(() -> {
                 logger.error(TOKENNOTFOUND, token);
-                return new Exception("Service request not found");
+                return new ResourceNotFoundException("Service request not found");
             });
 
         return serviceStatusHistoryRepository.findByServiceRequestOrderByCreatedAtDesc(request);
     }
 
-    public void updateServiceRequestStatus(String token, Status newStatus) throws Exception {
+    public void updateServiceRequestStatus(String token, Status newStatus) throws ResourceNotFoundException, InvalidStatusTransitionException {
         logger.info("Updating status for service request token: {} to status: {}", token, newStatus);
         ServiceRequest request = serviceRequestRepository.findByToken(token)
             .orElseThrow(() -> {
                 logger.error(TOKENNOTFOUND, token);
-                return new Exception("Service request not found");
+                return new ResourceNotFoundException("Service request not found");
             });
+
+        // Get current status from history
+        List<ServiceStatusHistory> history = serviceStatusHistoryRepository.findByServiceRequestOrderByCreatedAtDesc(request);
+        if (!history.isEmpty()) {
+            Status currentStatus = history.get(0).getStatus();
+
+            // Validate status transition
+            validateStatusTransition(currentStatus, newStatus, token);
+        }
 
         addStatusHistoryEntry(request, newStatus);
         logger.info("Status updated for service request token: {} to status: {}", token, newStatus);
@@ -175,6 +186,42 @@ public class ServiceRequestService {
         logger.debug("Slot available for municipality: {}, date: {}, time_slot: {}",
             municipality != null ? municipality.getName() : null, date, timeSlot);
         return true;
+    }
+
+
+    private void validateStatusTransition(Status currentStatus, Status newStatus, String token) throws InvalidStatusTransitionException {
+        // Define the order of statuses in the normal workflow
+        List<Status> workflowOrder = List.of(Status.RECEIVED, Status.ASSIGNED, Status.IN_PROGRESS, Status.COMPLETED);
+
+        // No transitions allowed after COMPLETED
+        if (currentStatus == Status.COMPLETED) {
+            logger.warn("Cannot change status from COMPLETED for token: {}", token);
+            throw new InvalidStatusTransitionException("Cannot change status of a completed request");
+        }
+
+        // No transitions allowed after CANCELLED
+        if (currentStatus == Status.CANCELLED) {
+            logger.warn("Cannot change status from CANCELLED for token: {}", token);
+            throw new InvalidStatusTransitionException("Cannot change status of a cancelled request");
+        }
+
+        // CANCELLED can only be set via the cancelServiceRequest method
+        if (newStatus == Status.CANCELLED) {
+            logger.warn("Cannot set status to CANCELLED directly for token: {}. Use cancelServiceRequest method.", token);
+            throw new InvalidStatusTransitionException("Cannot set status to CANCELLED directly. Use the cancel endpoint.");
+        }
+
+        // Check if both statuses are in the normal workflow
+        int currentIndex = workflowOrder.indexOf(currentStatus);
+        int newIndex = workflowOrder.indexOf(newStatus);
+
+        // Ensure we're not moving backward in the workflow
+        if (newIndex <= currentIndex) {
+            logger.warn("Cannot move backward from {} to {} for token: {}", currentStatus, newStatus, token);
+            throw new InvalidStatusTransitionException("Cannot move backward from " + currentStatus + " to " + newStatus);
+        }
+
+        logger.debug("Status transition from {} to {} is valid for token: {}", currentStatus, newStatus, token);
     }
 
 }

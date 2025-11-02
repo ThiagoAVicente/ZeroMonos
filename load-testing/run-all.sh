@@ -5,11 +5,11 @@ echo ""
 
 # Check if app is running
 if ! curl -f http://localhost:8080 > /dev/null 2>&1; then
-    echo "❌ Application not running on localhost:8080"
+    echo "Application not running on localhost:8080"
     exit 1
 fi
 
-echo "✅ Application is running"
+echo "Application is running"
 echo ""
 
 # Create results directory

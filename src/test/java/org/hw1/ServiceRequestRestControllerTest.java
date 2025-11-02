@@ -2,6 +2,8 @@ package org.hw1;
 
 import org.hw1.data.User;
 import org.hw1.boundary.ServiceRequestRestController;
+import org.hw1.boundary.ResourceNotFoundException;
+import org.hw1.boundary.InvalidStatusTransitionException;
 import org.hw1.data.Municipality;
 import org.hw1.data.ServiceRequest;
 import org.hw1.data.ServiceStatusHistory;
@@ -108,7 +110,7 @@ class ServiceRequestRestControllerTest {
     @Test
     void cancelServiceRequest_NotFound() throws Exception {
         // Simula exceção
-        Mockito.doThrow(new Exception("Service request not found"))
+        Mockito.doThrow(new ResourceNotFoundException("Service request not found"))
                 .when(serviceRequestService).cancelServiceRequest("notfound");
 
         mockMvc.perform(delete("/requests/notfound"))
@@ -141,7 +143,7 @@ class ServiceRequestRestControllerTest {
 
     @Test
     void updateServiceRequestStatus_NotFound() throws Exception {
-        Mockito.doThrow(new Exception("Service request not found"))
+        Mockito.doThrow(new ResourceNotFoundException("Service request not found"))
                 .when(serviceRequestService).updateServiceRequestStatus(eq("notfound"), any(Status.class));
 
         mockMvc.perform(put("/requests/notfound/status")
@@ -160,7 +162,7 @@ class ServiceRequestRestControllerTest {
 
     @Test
     void getServiceStatusHistory_NotFound() throws Exception {
-        Mockito.doThrow(new Exception("Service request not found"))
+        Mockito.doThrow(new ResourceNotFoundException("Service request not found"))
                         .when(serviceRequestService).getServiceStatusHistory("notfound");
         mockMvc.perform(get("/requests/notfound/history"))
                 .andExpect(status().isNotFound());

@@ -1,6 +1,8 @@
 package org.hw1;
 
 import org.hw1.data.*;
+import org.hw1.boundary.ResourceNotFoundException;
+import org.hw1.boundary.InvalidStatusTransitionException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -299,9 +301,148 @@ class ServiceRequestServiceTest {
 
     @Test
     void testUpdateServiceRequestStatus() throws Exception {
+        ServiceStatusHistory history = new ServiceStatusHistory();
+        history.setServiceRequest(request);
+        history.setStatus(Status.RECEIVED);
+        
         when(serviceRequestRepository.findByToken("test-token")).thenReturn(Optional.of(request));
+        when(serviceStatusHistoryRepository.findByServiceRequestOrderByCreatedAtDesc(request))
+            .thenReturn(Arrays.asList(history));
         when(serviceStatusHistoryRepository.save(any(ServiceStatusHistory.class))).thenReturn(new ServiceStatusHistory());
+        
+        assertDoesNotThrow(() -> service.updateServiceRequestStatus("test-token", Status.ASSIGNED));
+    }
+
+    @Test
+    void testUpdateServiceRequestStatus_ValidForwardTransition_ReceivedToAssigned() throws Exception {
+        ServiceStatusHistory history = new ServiceStatusHistory();
+        history.setServiceRequest(request);
+        history.setStatus(Status.RECEIVED);
+        
+        when(serviceRequestRepository.findByToken("test-token")).thenReturn(Optional.of(request));
+        when(serviceStatusHistoryRepository.findByServiceRequestOrderByCreatedAtDesc(request))
+            .thenReturn(Arrays.asList(history));
+        when(serviceStatusHistoryRepository.save(any(ServiceStatusHistory.class))).thenReturn(new ServiceStatusHistory());
+        
+        assertDoesNotThrow(() -> service.updateServiceRequestStatus("test-token", Status.ASSIGNED));
+    }
+
+    @Test
+    void testUpdateServiceRequestStatus_ValidForwardTransition_AssignedToInProgress() throws Exception {
+        ServiceStatusHistory history = new ServiceStatusHistory();
+        history.setServiceRequest(request);
+        history.setStatus(Status.ASSIGNED);
+        
+        when(serviceRequestRepository.findByToken("test-token")).thenReturn(Optional.of(request));
+        when(serviceStatusHistoryRepository.findByServiceRequestOrderByCreatedAtDesc(request))
+            .thenReturn(Arrays.asList(history));
+        when(serviceStatusHistoryRepository.save(any(ServiceStatusHistory.class))).thenReturn(new ServiceStatusHistory());
+        
+        assertDoesNotThrow(() -> service.updateServiceRequestStatus("test-token", Status.IN_PROGRESS));
+    }
+
+    @Test
+    void testUpdateServiceRequestStatus_ValidForwardTransition_InProgressToCompleted() throws Exception {
+        ServiceStatusHistory history = new ServiceStatusHistory();
+        history.setServiceRequest(request);
+        history.setStatus(Status.IN_PROGRESS);
+        
+        when(serviceRequestRepository.findByToken("test-token")).thenReturn(Optional.of(request));
+        when(serviceStatusHistoryRepository.findByServiceRequestOrderByCreatedAtDesc(request))
+            .thenReturn(Arrays.asList(history));
+        when(serviceStatusHistoryRepository.save(any(ServiceStatusHistory.class))).thenReturn(new ServiceStatusHistory());
+        
         assertDoesNotThrow(() -> service.updateServiceRequestStatus("test-token", Status.COMPLETED));
+    }
+
+    @Test
+    void testUpdateServiceRequestStatus_BackwardTransition_AssignedToReceived() {
+        ServiceStatusHistory history = new ServiceStatusHistory();
+        history.setServiceRequest(request);
+        history.setStatus(Status.ASSIGNED);
+        
+        when(serviceRequestRepository.findByToken("test-token")).thenReturn(Optional.of(request));
+        when(serviceStatusHistoryRepository.findByServiceRequestOrderByCreatedAtDesc(request))
+            .thenReturn(Arrays.asList(history));
+        
+        InvalidStatusTransitionException exception = assertThrows(InvalidStatusTransitionException.class, 
+            () -> service.updateServiceRequestStatus("test-token", Status.RECEIVED));
+        assertThat(exception.getMessage(), containsString("Cannot move backward"));
+    }
+
+    @Test
+    void testUpdateServiceRequestStatus_BackwardTransition_InProgressToAssigned() {
+        ServiceStatusHistory history = new ServiceStatusHistory();
+        history.setServiceRequest(request);
+        history.setStatus(Status.IN_PROGRESS);
+        
+        when(serviceRequestRepository.findByToken("test-token")).thenReturn(Optional.of(request));
+        when(serviceStatusHistoryRepository.findByServiceRequestOrderByCreatedAtDesc(request))
+            .thenReturn(Arrays.asList(history));
+        
+        InvalidStatusTransitionException exception = assertThrows(InvalidStatusTransitionException.class, 
+            () -> service.updateServiceRequestStatus("test-token", Status.ASSIGNED));
+        assertThat(exception.getMessage(), containsString("Cannot move backward"));
+    }
+
+    @Test
+    void testUpdateServiceRequestStatus_BackwardTransition_CompletedToInProgress() {
+        ServiceStatusHistory history = new ServiceStatusHistory();
+        history.setServiceRequest(request);
+        history.setStatus(Status.COMPLETED);
+        
+        when(serviceRequestRepository.findByToken("test-token")).thenReturn(Optional.of(request));
+        when(serviceStatusHistoryRepository.findByServiceRequestOrderByCreatedAtDesc(request))
+            .thenReturn(Arrays.asList(history));
+        
+        InvalidStatusTransitionException exception = assertThrows(InvalidStatusTransitionException.class, 
+            () -> service.updateServiceRequestStatus("test-token", Status.IN_PROGRESS));
+        assertThat(exception.getMessage(), containsString("Cannot change status of a completed request"));
+    }
+
+    @Test
+    void testUpdateServiceRequestStatus_AfterCancelled() {
+        ServiceStatusHistory history = new ServiceStatusHistory();
+        history.setServiceRequest(request);
+        history.setStatus(Status.CANCELLED);
+        
+        when(serviceRequestRepository.findByToken("test-token")).thenReturn(Optional.of(request));
+        when(serviceStatusHistoryRepository.findByServiceRequestOrderByCreatedAtDesc(request))
+            .thenReturn(Arrays.asList(history));
+        
+        InvalidStatusTransitionException exception = assertThrows(InvalidStatusTransitionException.class, 
+            () -> service.updateServiceRequestStatus("test-token", Status.ASSIGNED));
+        assertThat(exception.getMessage(), containsString("Cannot change status of a cancelled request"));
+    }
+
+    @Test
+    void testUpdateServiceRequestStatus_DirectCancelledNotAllowed() {
+        ServiceStatusHistory history = new ServiceStatusHistory();
+        history.setServiceRequest(request);
+        history.setStatus(Status.RECEIVED);
+        
+        when(serviceRequestRepository.findByToken("test-token")).thenReturn(Optional.of(request));
+        when(serviceStatusHistoryRepository.findByServiceRequestOrderByCreatedAtDesc(request))
+            .thenReturn(Arrays.asList(history));
+        
+        InvalidStatusTransitionException exception = assertThrows(InvalidStatusTransitionException.class, 
+            () -> service.updateServiceRequestStatus("test-token", Status.CANCELLED));
+        assertThat(exception.getMessage(), containsString("Cannot set status to CANCELLED directly"));
+    }
+
+    @Test
+    void testUpdateServiceRequestStatus_SameStatus() {
+        ServiceStatusHistory history = new ServiceStatusHistory();
+        history.setServiceRequest(request);
+        history.setStatus(Status.ASSIGNED);
+        
+        when(serviceRequestRepository.findByToken("test-token")).thenReturn(Optional.of(request));
+        when(serviceStatusHistoryRepository.findByServiceRequestOrderByCreatedAtDesc(request))
+            .thenReturn(Arrays.asList(history));
+        
+        InvalidStatusTransitionException exception = assertThrows(InvalidStatusTransitionException.class, 
+            () -> service.updateServiceRequestStatus("test-token", Status.ASSIGNED));
+        assertThat(exception.getMessage(), containsString("Cannot move backward"));
     }
 
     @Test
