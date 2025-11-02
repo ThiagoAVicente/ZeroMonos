@@ -17,8 +17,14 @@ import java.util.Optional;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.Parameter;
+
 @RestController
 @RequestMapping("/requests")
+@Tag(name = "Service Requests")
 public class ServiceRequestRestController {
 
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ServiceRequestRestController.class);
@@ -35,6 +41,7 @@ public class ServiceRequestRestController {
     }
 
     @PostMapping
+    @Operation(summary = "Create a new service request")
     public ResponseEntity<ServiceRequest> createRequest(@RequestBody CreateServiceRequestDTO request) {
         logger.info("Received createRequest for user: {}, municipality: {}", request.getUser(), request.getMunicipality());
 
@@ -85,6 +92,7 @@ public class ServiceRequestRestController {
     }
 
     @GetMapping("/{token}")
+    @Operation(summary = "Get request by token")
     public ResponseEntity<ServiceRequest> getRequestByToken(@PathVariable String token) {
         token = token.replaceAll("[\n\r]", "_");
         logger.info("Received getRequestByToken for token: {}", token);
@@ -98,6 +106,7 @@ public class ServiceRequestRestController {
     }
 
     @DeleteMapping("/{token}")
+    @Operation(summary = "Cancel a service request by token")
     public ResponseEntity<Void> cancelRequest(@PathVariable String token) {
         try {
             token = token.replaceAll("[\n\r]", "_");
@@ -117,6 +126,7 @@ public class ServiceRequestRestController {
     }
 
     @GetMapping
+    @Operation(summary = "Get requests by municipality")
     public ResponseEntity<List<ServiceRequest>> getRequestsByMunicipality(@RequestParam String municipality) {
         municipality = municipality.replaceAll("[\n\r]", "_");
         logger.info("Received getRequestsByMunicipality for municipality: {}", municipality);
@@ -135,6 +145,7 @@ public class ServiceRequestRestController {
     }
 
     @PutMapping("/{token}/status")
+    @Operation(summary = "Update the status of a service request")
     public ResponseEntity<Void> updateRequestStatus(@PathVariable String token, @RequestBody Status status) {
         token = token.replaceAll("[\n\r]", "_");
         logger.info("Received updateRequestStatus for token: {}, status: {}", token, status);
@@ -149,6 +160,7 @@ public class ServiceRequestRestController {
     }
 
     @GetMapping("/{token}/history")
+    @Operation(summary = "Get the status history of a service request")
     public ResponseEntity<List<ServiceStatusHistory>> getServiceStatusHistory(@PathVariable String token) {
         token = token.replaceAll("[\n\r]", "_");
         logger.info("Received getServiceStatusHistory for token: {}", token);
@@ -163,6 +175,7 @@ public class ServiceRequestRestController {
     }
 
     @GetMapping("/municipalities")
+    @Operation(summary = "Get all municipalities")
     public ResponseEntity<List<Municipality>> getMunicipalities() {
         logger.info("Received getMunicipalities request");
         List<Municipality> list = municipalityService.getAllMunicipalities();
@@ -171,6 +184,7 @@ public class ServiceRequestRestController {
     }
 
     @GetMapping("/user/{username}")
+    @Operation(summary = "Get requests by user")
     public ResponseEntity<List<ServiceRequest>> getRequestsByUser(@PathVariable String username) {
         username = username.replaceAll("[\n\r]", "_");
         logger.info("Received getRequestsByUser for username: {}", username);

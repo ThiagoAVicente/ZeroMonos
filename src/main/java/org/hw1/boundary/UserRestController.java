@@ -8,6 +8,10 @@ import org.springframework.web.bind.annotation.*;
 import org.hw1.boundary.dto.AuthRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.Parameter;
 
 @RestController
 @RequestMapping("/users")
@@ -22,6 +26,7 @@ public class UserRestController {
     }
 
     @PostMapping("/authenticate")
+    @Operation(summary = "Authenticate a user")
     public ResponseEntity<Boolean> authenticate(@RequestBody AuthRequest request) {
         logger.info("Received authentication request for user: {}", request.getName());
         boolean isAuthenticated = userService.authenticate(request.getName(), request.getPassword());
