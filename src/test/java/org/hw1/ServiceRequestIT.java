@@ -151,7 +151,7 @@ class ServiceRequestIT {
         String requestBody = "{"
                 + "\"user\": \"Test User\","
                 + "\"municipality\": \"Porto\","
-                + "\"requestedDate\": \"2025-11-03\","
+                + "\"requestedDate\": \"2025-12-02\","
                 + "\"timeSlot\": \"11:00\","
                 + "\"description\": \"Primeiro pedido\""
                 + "}";

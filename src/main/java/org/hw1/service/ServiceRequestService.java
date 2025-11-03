@@ -150,7 +150,7 @@ public class ServiceRequestService {
         logger.debug("Checking availability for municipality: {}, date: {}, time_slot: {}",municipality.getName(), date, timeSlot);
 
         // check if date is in the past
-        if (date.isBefore(LocalDate.now())) {
+        if (date.isBefore(LocalDate.now().plusDays(1))) {
             logger.info("Requested date {} is in the past, not available.", date);
             return false;
         }
