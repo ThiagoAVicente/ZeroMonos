@@ -41,12 +41,6 @@ jobs:
         npm install -D @playwright/test
         npx playwright install --with-deps chromium
 
-    - name: Start Spring Boot app
-      run: |
-        mvn spring-boot:run &
-        echo $! > app.pid
-        timeout 120 bash -c 'until curl -f http://localhost:8080 > /dev/null 2>&1; do sleep 3; done' || (kill $(cat app.pid) && exit 1)
-
     - name: Build and analyze
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -56,6 +50,3 @@ jobs:
           -Dsonar.host.url=https://sonarcloud.io
           -Dsonar.organization=thiagoavicente
           -Dsonar.token="$SONAR_TOKEN"
-    - name: Stop app
-      if: always()
-      run: kill $(cat app.pid) || true
